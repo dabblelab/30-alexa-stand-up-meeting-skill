@@ -1,48 +1,160 @@
 {
-    "interactionModel": {
+  "interactionModel": {
       "languageModel": {
-        "invocationName": "template zero",
-        "types": [
-  
-        ],
-        
-        "intents": [
+          "invocationName": "daily stand up",
+          "intents": [
+              {
+                  "name": "AMAZON.CancelIntent",
+                  "samples": []
+              },
+              {
+                  "name": "AMAZON.HelpIntent",
+                  "samples": []
+              },
+              {
+                  "name": "AMAZON.StopIntent",
+                  "samples": []
+              },
+              {
+                  "name": "AMAZON.NavigateHomeIntent",
+                  "samples": []
+              },
+              {
+                  "name": "GetCodeIntent",
+                  "slots": [
+                      {
+                          "name": "MeetingCode",
+                          "type": "AMAZON.NUMBER"
+                      }
+                  ],
+                  "samples": [
+                      "My code is {MeetingCode}",
+                      "The code is {MeetingCode}",
+                      "{MeetingCode}"
+                  ]
+              },
+              {
+                  "name": "GetReportIntent",
+                  "slots": [
+                      {
+                          "name": "firstQuestion",
+                          "type": "AMAZON.SearchQuery",
+                          "samples": [
+                              "{firstQuestion}"
+                          ]
+                      },
+                      {
+                          "name": "secondQuestion",
+                          "type": "AMAZON.SearchQuery",
+                          "samples": [
+                              "{secondQuestion}"
+                          ]
+                      },
+                      {
+                          "name": "thirdQuestion",
+                          "type": "YES_NO",
+                          "samples": [
+                              "{thirdQuestion}"
+                          ]
+                      }
+                  ],
+                  "samples": []
+              }
+          ],
+          "types": [
+              {
+                  "name": "YES_NO",
+                  "values": [
+                      {
+                          "name": {
+                              "value": "no",
+                              "synonyms": [
+                                  "nah",
+                                  "nope"
+                              ]
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "yes",
+                              "synonyms": [
+                                  "yup",
+                                  "yeah",
+                                  "ye"
+                              ]
+                          }
+                      }
+                  ]
+              }
+          ]
+      },
+      "dialog": {
+          "intents": [
+              {
+                  "name": "GetReportIntent",
+                  "confirmationRequired": false,
+                  "prompts": {},
+                  "slots": [
+                      {
+                          "name": "firstQuestion",
+                          "type": "AMAZON.SearchQuery",
+                          "confirmationRequired": false,
+                          "elicitationRequired": true,
+                          "prompts": {
+                              "elicitation": "Elicit.Slot.288779318596.409557698368"
+                          }
+                      },
+                      {
+                          "name": "secondQuestion",
+                          "type": "AMAZON.SearchQuery",
+                          "confirmationRequired": false,
+                          "elicitationRequired": true,
+                          "prompts": {
+                              "elicitation": "Elicit.Slot.288779318596.1420775370020"
+                          }
+                      },
+                      {
+                          "name": "thirdQuestion",
+                          "type": "YES_NO",
+                          "confirmationRequired": false,
+                          "elicitationRequired": true,
+                          "prompts": {
+                              "elicitation": "Elicit.Slot.288779318596.88143460540"
+                          }
+                      }
+                  ]
+              }
+          ],
+          "delegationStrategy": "ALWAYS"
+      },
+      "prompts": [
           {
-            "name": "AMAZON.NavigateHomeIntent",
-            "samples": [
-  
-            ]
+              "id": "Elicit.Slot.288779318596.409557698368",
+              "variations": [
+                  {
+                      "type": "PlainText",
+                      "value": "Alright, first question. What did you do yesterday?"
+                  }
+              ]
           },
           {
-            "name": "AMAZON.CancelIntent",
-            "samples": [
-  
-            ]
+              "id": "Elicit.Slot.288779318596.1420775370020",
+              "variations": [
+                  {
+                      "type": "PlainText",
+                      "value": "Got it. What will you do today?"
+                  }
+              ]
           },
           {
-            "name": "AMAZON.HelpIntent",
-            "samples": [
-  
-            ]
-          },
-          {
-            "name": "AMAZON.StopIntent",
-            "samples": [
-  
-            ]
-          },
-          {
-            "name":"AboutIntent",
-            "slots":[],
-            "samples":[
-                "tell me about this template",
-                "about this template",
-                "about this skill",
-                "tell me more"
-            ]
-        }
-        ]
-      }
-    }
+              "id": "Elicit.Slot.288779318596.88143460540",
+              "variations": [
+                  {
+                      "type": "PlainText",
+                      "value": " Okay, last question. Is there anything blocking your progress?"
+                  }
+              ]
+          }
+      ]
   }
-  
+}

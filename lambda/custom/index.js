@@ -1,5 +1,5 @@
  /* 
- * Copyright (C) 2019 Dabble Lab - All Rights Reserved
+ * Copyright (C) 2020 Dabble Lab - All Rights Reserved
  * You may use, distribute and modify this code under the 
  * terms and conditions defined in file 'LICENSE.txt', which 
  * is part of this source code package.
@@ -9,6 +9,8 @@
  */
 
 const Alexa = require('ask-sdk-core');
+
+const usersData = require('./users.json');
 
 const LaunchRequestHandler = {
   canHandle(handlerInput) {
@@ -25,14 +27,79 @@ const LaunchRequestHandler = {
   },
 };
 
+const GetCodeHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'GetCodeIntent';
+  },
+  handle(handlerInput) {
+    const currentIntent = handlerInput.requestEnvelope.request.intent;
+    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+
+    let speechText;
+
+    const meetingCode = +currentIntent.slots.MeetingCode.value;
+    let codeExists;
+    
+    for ( let i = 0; i < usersData.length; i++ ) {
+      console.log(usersData[i]);
+      if ( usersData[i].role === 'user' && usersData[i].meetingCode === meetingCode ) {
+        codeExists = true;
+
+        sessionAttributes.userEmail = usersData[i].email;
+
+      } else if ( usersData[i].role === 'manager' ) {
+        sessionAttributes.managerEmail = usersData[i].email;
+      }
+    }
+
+    handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+
+    if ( meetingCode && codeExists ) {
+      // speechText = `${meetingCode}`;
+      // console.log(meetingCode);
+      
+      return handlerInput.responseBuilder
+        .addDelegateDirective({
+          name: 'GetReportIntent',
+          confirmationStatus: 'NONE',
+          slots: {}
+        })
+        .speak(speechText)
+        .getResponse();
+
+    } else {
+      speechText = `Your meeting code is not valid.`;
+
+      return handlerInput.responseBuilder
+        .speak(speechText)
+        .getResponse();
+    }
+  },
+};
+
 const GetReportHandler = {
   canHandle(handlerInput) {
     return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-      && handlerInput.requestEnvelope.request.intent.name === 'ReportIntent';
+      && handlerInput.requestEnvelope.request.intent.name === 'GetReportIntent';
   },
   handle(handlerInput) {
+    const currentIntent = handlerInput.requestEnvelope.request.intent;
+    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
 
-    const speechText = `This is an Alexa Skill Template from dabblelab.com. You can use this template as the starting point for creating a custom skill or template.`;
+    let speechText;
+
+    const firstQuestion = currentIntent.slots.firstQuestion.value;
+    const secondQuestion = currentIntent.slots.secondQuestion.value;
+    const thirdQuestion = currentIntent.slots.thirdQuestion.value;
+
+    sessionAttributes.answer1 = firstQuestion;
+    sessionAttributes.answer2 = secondQuestion;
+    sessionAttributes.answer3 = thirdQuestion;
+
+    handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+
+    speechText = `You answered: ${firstQuestion} and ${secondQuestion}`;
 
     return handlerInput.responseBuilder
       .speak(speechText)
@@ -110,11 +177,17 @@ const ErrorHandler = {
   },
 };
 
+function sendEmail(report) {
+  
+}
+
 const skillBuilder = Alexa.SkillBuilders.custom();
 
 exports.handler = skillBuilder
   .addRequestHandlers(
     LaunchRequestHandler,
+    GetCodeHandler,
+    GetReportHandler,
     AboutIntentHandler,
     HelpIntentHandler,
     CancelAndStopIntentHandler,

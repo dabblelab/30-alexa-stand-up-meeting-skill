@@ -1,0 +1,19 @@
+[
+  { 
+    "role": "manager",
+    "name": "Mark Hovsepyan",
+    "email": "mark@dabblelab.com"
+  },
+  { 
+    "role": "user",
+    "name": "James",
+    "email": "james@test.com",
+    "meetingCode": 1111
+  },
+  { 
+    "role": "user",
+    "name": "David",
+    "email": "david@test.com",
+    "meetingCode": 1112
+  }
+]

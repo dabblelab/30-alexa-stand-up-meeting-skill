@@ -15,13 +15,27 @@ const LaunchRequestHandler = {
     return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
   },
   handle(handlerInput) {
-    const speechText = `Hello. This is a simple skill. To learn more say, learn more.`;
-    const repromptText = 'You can say, learn more.';
+    const speechText = `Hello. Welcome to the daily stand-up meeting. To continue, I’ll need your meeting code.`;
+    const repromptText = 'Please tell me your meeting code.';
 
     return handlerInput.responseBuilder
       .speak(speechText)
       .reprompt(repromptText)
-      .withSimpleCard('Example Card Title', "Example card body content.")
+      .getResponse();
+  },
+};
+
+const GetReportHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'ReportIntent';
+  },
+  handle(handlerInput) {
+
+    const speechText = `This is an Alexa Skill Template from dabblelab.com. You can use this template as the starting point for creating a custom skill or template.`;
+
+    return handlerInput.responseBuilder
+      .speak(speechText)
       .getResponse();
   },
 };

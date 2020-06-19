@@ -3,16 +3,22 @@ module.exports = {
     translation : {
         'SKILL_NAME' : 'Daily Stand Up',
         'GREETING' : [
-            `Hello. Welcome to %s. To continue, I'll need your meeting code. What is your meeting code?`,
+            `Welcome to %s. To continue, please tell me your pin.`,
         ],
         'GREETING_REPROMPT' : [
-            `What is your meeting code?`
+            `What is your pin?`
         ],
         'HELP' : [
-            'This skill can collect your daily stand up meeting report. Would you like to start?'
+            'This skill collects daily stand up meeting reports and emails the daily reports to a team manager. Would you like to start?'
         ],
         'HELP_REPROMPT' : [
             'Would you like to provide your daily stand up report?'
+        ],
+        'ABOUT' : [
+            `This is an Alexa Skill Template from dabblelab.com. You can use it to collect daily stand up meeting reports. Would you like to provide a daily stand up report?`,
+        ],
+        'ABOUT_REPROMPT' : [
+            'Would you like to provide a daily stand up report?'
         ],
         'CANCEL_STOP_RESPONSE' : [
             `Good bye`,

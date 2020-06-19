@@ -14,7 +14,7 @@
 
 /*
   ABOUT: 
-  This is an example skill that lets users provide a daily stand up meeting report.
+  This is an example skill that lets users submit a daily stand up meeting report.
 
   SETUP:
   See the included README.md file
@@ -22,7 +22,9 @@
   RESOURCES:
   For a video tutorial and support visit https://dabblelab.com/templates
 */
+
 const Alexa = require('ask-sdk-core');
+const AWS = require('aws-sdk');
 const dotenv = require('dotenv');
 const i18n = require('i18next');
 const sprintf = require('i18next-sprintf-postprocessor');
@@ -90,20 +92,26 @@ const LaunchRequestHandler = {
     return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
   },
   handle(handlerInput) {
-    const speechText = `Hello. Welcome to the daily stand-up meeting. To continue, I'll need your meeting code.`;
-    const repromptText = 'Please tell me your meeting code.';
+    const { attributesManager, responseBuilder } = handlerInput;
+    const requestAttributes = attributesManager.getRequestAttributes();
 
-    return handlerInput.responseBuilder
-      .speak(speechText)
-      .reprompt(repromptText)
+    const skillName = requestAttributes.t('SKILL_NAME');
+    const speakOutput = requestAttributes.t('GREETING', skillName);
+    const repromptOutput = requestAttributes.t('GREETING_REPROMPT');
+
+    return responseBuilder
+      .speak(speakOutput)
+      .reprompt(repromptOutput)
       .getResponse();
   },
 };
 
-const GetCodeHandler = {
+const GetCodeIntentHandler = {
   canHandle(handlerInput) {
+    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
     return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-      && handlerInput.requestEnvelope.request.intent.name === 'GetCodeIntent';
+      && handlerInput.requestEnvelope.request.intent.name === 'GetCodeIntent'
+      && !sessionAttributes.validated;
   },
   handle(handlerInput) {
     const currentIntent = handlerInput.requestEnvelope.request.intent;
@@ -116,7 +124,8 @@ const GetCodeHandler = {
     
     for ( let i = 0; i < usersData.length; i++ ) {
       console.log(usersData[i]);
-      if ( usersData[i].role === 'user' && usersData[i].meetingCode === meetingCode ) {
+
+      if ( usersData[i].role === 'user' && usersData[i].pin === meetingCode ) {
         codeExists = true;
 
         sessionAttributes.userEmail = usersData[i].email;
@@ -129,9 +138,7 @@ const GetCodeHandler = {
     handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
 
     if ( meetingCode && codeExists ) {
-      // speechText = `${meetingCode}`;
-      // console.log(meetingCode);
-      
+  
       return handlerInput.responseBuilder
         .addDelegateDirective({
           name: 'GetReportIntent',
@@ -151,30 +158,35 @@ const GetCodeHandler = {
   },
 };
 
-const GetReportHandler = {
+const GetReportIntentCompleteHandler = {
   canHandle(handlerInput) {
     return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-      && handlerInput.requestEnvelope.request.intent.name === 'GetReportIntent';
+      && handlerInput.requestEnvelope.request.intent.name === 'GetReportIntent'
+      && handlerInput.requestEnvelope.request.dialogState === 'COMPLETED';
   },
-  handle(handlerInput) {
-    const currentIntent = handlerInput.requestEnvelope.request.intent;
-    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+  async handle(handlerInput) {
+    const { requestEnvelope, attributesManager, responseBuilder } = handlerInput;
+    const sessionAttributes = attributesManager.getSessionAttributes();
+    
+    const questionYesterday = Alexa.getSlotValue(requestEnvelope, "questionYesterday");
+    const questionToday = Alexa.getSlotValue(requestEnvelope, "questionToday");
+    const questionBlocking = Alexa.getSlotValue(requestEnvelope, "questionBlocking");
+    
+    const reportData = {
+        reportDate: luxon.DateTime.local().toLocaleString(luxon.DateTime.DATE_HUGE),
+        name: sessionAttributes.userEmail, //TODO:get name from session
+        yesterday : questionYesterday,
+        today : questionToday,
+        blocking: questionBlocking
+    }
+    
+    let speechText = "Thank you. Your report was sent.";
+    
+    await sendEmail(reportData).then((result) => {
+      speechText = result;
+    });
 
-    let speechText;
-
-    const firstQuestion = currentIntent.slots.firstQuestion.value;
-    const secondQuestion = currentIntent.slots.secondQuestion.value;
-    const thirdQuestion = currentIntent.slots.thirdQuestion.value;
-
-    sessionAttributes.answer1 = firstQuestion;
-    sessionAttributes.answer2 = secondQuestion;
-    sessionAttributes.answer3 = thirdQuestion;
-
-    handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
-
-    speechText = `You answered: ${firstQuestion} and ${secondQuestion}`;
-
-    return handlerInput.responseBuilder
+    return responseBuilder
       .speak(speechText)
       .getResponse();
   },
@@ -186,11 +198,15 @@ const AboutIntentHandler = {
       && handlerInput.requestEnvelope.request.intent.name === 'AboutIntent';
   },
   handle(handlerInput) {
+    const { attributesManager, responseBuilder } = handlerInput;
+    const requestAttributes = attributesManager.getRequestAttributes();
 
-    const speechText = `This is an Alexa Skill Template from dabblelab.com. You can use this template as the starting point for creating a custom skill or template.`;
+    const speakOutput = requestAttributes.t('ABOUT');
+    const repromptOutput = requestAttributes.t('ABOUT_REPROMPT');
 
-    return handlerInput.responseBuilder
-      .speak(speechText)
+    return responseBuilder
+      .speak(speakOutput)
+      .reprompt(repromptOutput)
       .getResponse();
   },
 };
@@ -264,6 +280,21 @@ const ErrorHandler = {
   },
 };
 
+const IntentReflectorHandler = {
+  canHandle(handlerInput) {
+      return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest';
+  },
+  handle(handlerInput) {
+      const intentName = Alexa.getIntentName(handlerInput.requestEnvelope);
+      const speakOutput = `You just triggered ${intentName}`;
+
+      return handlerInput.responseBuilder
+          .speak(speakOutput)
+          //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
+          .getResponse();
+  }
+};
+
 /* INTERCEPTORS */
 const EnvironmentCheckInterceptor = {
   process(handlerInput) {
@@ -322,20 +353,54 @@ const LocalizationInterceptor = {
 };
 
 /* FUNCTIONS */
-function sendEmail(report) {
-  
+function sendEmail(reportData) {
+
+  return new Promise(function (resolve, reject) {
+
+    try {
+      //save report to s3
+      const s3 = new AWS.S3();
+
+      const s3Params = {
+        Body: getEmailBodyText(reportData),
+        Bucket: process.env.S3_PERSISTENCE_BUCKET,
+        Key: `reports/${luxon.DateTime.local().toISODate()}/${reportData.name.replace(/ /g, "-").toLowerCase()}-${luxon.DateTime.utc().toMillis()}.txt`
+      };
+
+      const s3Result = s3.putObject(s3Params, (error, data) => {
+   
+        const msg = {
+          to: constants.NOTIFY_EMAIL,
+          from: constants.FROM_EMAIL,
+          subject: `Stand Up Report for ${reportData.name}`,
+          text: getEmailBodyText(reportData),
+          html: getEmailBodyHtml(reportData),
+        };
+
+        const sgMail = require('@sendgrid/mail');
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+        sgMail.send(msg).then(result => {
+          //mail done sending
+          resolve("Thank you. Your report was sent.")
+        });
+      });
+
+    } catch (ex) {
+      console.log(`bookAppointment() ERROR: ${ex.message}`)
+      reject(false)
+    }
+
+  });
+
 }
 
 function getEmailBodyText(appointmentData) {
 
-  let textBody = `Meeting Details:\n`;
+  let textBody = `Stand Up Report for {{name}} ({{reportDate}}):\n\n`;
 
-  textBody += `Timezone: {{userTimezone}}\n`,
-    textBody += `Name: {{profileName}}\n`,
-    textBody += `Email: {{profileEmail}}\n`,
-    textBody += `Mobile Number: {{profileMobileNumber}}\n`,
-    textBody += `Date: {{appointmentDate}}\n`,
-    textBody += `Time: {{appointmentTime}}\n`;
+  textBody += `What did you work on yesterday?\nANSWER: {{yesterday}}\n\n`,
+    textBody += `What are you working on today?\nANSWER: {{today}}\n\n`,
+    textBody += `What is blocking your progress?\nANSWER: {{blocking}}\n\n`;
 
   const textBodyTemplate = handlebars.compile(textBody);
 
@@ -345,14 +410,11 @@ function getEmailBodyText(appointmentData) {
 
 function getEmailBodyHtml(appointmentData) {
 
-  let htmlBody = `<strong>Meeting Details:</strong><br/>`;
+  let htmlBody = `<strong>Stand Up Report for {{name}}  ({{reportDate}}):</strong><br/><br/>`;
 
-  htmlBody += `Timezone: {{userTimezone}}<br/>`,
-    htmlBody += `Name: {{profileName}}<br/>`,
-    htmlBody += `Email: {{profileEmail}}<br/>`,
-    htmlBody += `Mobile Number: {{profileMobileNumber}}<br/>`,
-    htmlBody += `Date: {{appointmentDate}}<br/>`,
-    htmlBody += `Time: {{appointmentTime}}<br/>`;
+  htmlBody += `What did you work on yesterday?<br/><strong>ANSWER:</strong> {{yesterday}}<br/></br/>`,
+    htmlBody += `What are you working on today?<br/><strong>ANSWER:</strong> {{today}}<br/></br/>`,
+    htmlBody += `What is blocking your progress?<br/><strong>ANSWER:</strong> {{blocking}}<br/></br/>`;
 
   const htmlBodyTemplate = handlebars.compile(htmlBody);
 
@@ -367,12 +429,13 @@ exports.handler = skillBuilder
   .addRequestHandlers(
     InvalidConfigHandler,
     LaunchRequestHandler,
-    GetCodeHandler,
-    GetReportHandler,
+    GetCodeIntentHandler,
+    GetReportIntentCompleteHandler,
     AboutIntentHandler,
     HelpIntentHandler,
     CancelAndStopIntentHandler,
-    SessionEndedRequestHandler
+    SessionEndedRequestHandler,
+    IntentReflectorHandler
   )
   .addRequestInterceptors(
     EnvironmentCheckInterceptor,

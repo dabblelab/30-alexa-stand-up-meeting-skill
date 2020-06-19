@@ -5,16 +5,16 @@
                 "en-US": {
                     "summary": "Sample Short Description",
                     "examplePhrases": [
-                        "Alexa open example template",
-                        "Alexa launch example template",
-                        "Alexa start example template"
+                        "Alexa open Daily Stand Up",
+                        "Alexa launch Daily Stand Up",
+                        "Alexa start Daily Stand Up"
                     ],
                     "keywords": [
                         "keyword1",
                         "keyword2",
                         "keyword3"
                     ],
-                    "name": "Template 0 - Alexa Skill Template",
+                    "name": "Daily Stand Up",
                     "description": "Sample Full Description",
                     "smallIconUri": "https://s3.amazonaws.com/cdn.dabblelab.com/img/skill-template-default-sm.png",
                     "largeIconUri": "https://s3.amazonaws.com/cdn.dabblelab.com/img/skill-template-default-lg.png"
@@ -28,7 +28,7 @@
         "apis": {
             "custom": {
                 "endpoint": {
-                    "sourceDir": "lambda/custom"
+                    "sourceDir": "lambda"
                 }
             }
         },

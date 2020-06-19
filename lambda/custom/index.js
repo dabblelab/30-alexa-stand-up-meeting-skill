@@ -31,14 +31,10 @@ const sprintf = require('i18next-sprintf-postprocessor');
 const handlebars = require('handlebars');
 const luxon = require('luxon');
 
-const usersData = require('./users.json');
+const usersData = require('./team.json');
 
 /* CONSTANTS */
-const constants = {
-  "FROM_NAME": "Dabble Lab",
-  "FROM_EMAIL": "learn@dabblelab.com",
-  "NOTIFY_EMAIL": "steve@dabblelab.com",
-};
+//set constants in the .env file. see README.md for details
 
 /* LANGUAGE STRINGS */
 const languageStrings = {
@@ -125,13 +121,12 @@ const GetCodeIntentHandler = {
     for ( let i = 0; i < usersData.length; i++ ) {
       console.log(usersData[i]);
 
-      if ( usersData[i].role === 'user' && usersData[i].pin === meetingCode ) {
+      if ( usersData[i].pin === meetingCode ) {
         codeExists = true;
 
         sessionAttributes.userEmail = usersData[i].email;
+        sessionAttributes.userName = usersData[i].name;
 
-      } else if ( usersData[i].role === 'manager' ) {
-        sessionAttributes.managerEmail = usersData[i].email;
       }
     }
 
@@ -370,8 +365,8 @@ function sendEmail(reportData) {
       const s3Result = s3.putObject(s3Params, (error, data) => {
    
         const msg = {
-          to: constants.NOTIFY_EMAIL,
-          from: constants.FROM_EMAIL,
+          to: process.env.TO_EMAIL,
+          from: process.env.FROM_EMAIL,
           subject: `Stand Up Report for ${reportData.name}`,
           text: getEmailBodyText(reportData),
           html: getEmailBodyHtml(reportData),

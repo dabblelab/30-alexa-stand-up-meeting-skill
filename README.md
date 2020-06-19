@@ -10,28 +10,23 @@ This is an example skill that lets users submit a daily stand up meeting report.
 - Get a Sendgrid API key. See: https://sendgrid.com/docs/ui/account-and-settings/api-keys/
     > NOTE: You could also modify the code to use MailChimp, AWS SES or other 
     > emails providers.
-- Create a file named `.env`, copy in the following code, and replace the dummy value(s) that begin with 'your_' with your values.
+- Create a file named `.env`, copy in the following code, and replace the dummy value(s) begining with 'your_' with your values.
 ```
 SENDGRID_API_KEY=your_sendgrid_api_key
+FROM_EMAIL=your_sender_email
+TO_EMAIL=your_recipient_email
 ```
-- Set up team members and a manager in the `users.json` file like the example below.
+- Set up team members in the `team.json` file like the example below.
 ```json
 [
   { 
-    "role": "manager",
-    "name": "Gabi Botner",
-    "email": "gabi@dabblelab.com"
-  },
-  { 
-    "role": "user",
-    "name": "Mary",
-    "email": "mary@test.com",
+    "name": "Steve",
+    "email": "steve@test.com",
     "pin": 1111
   },
   { 
-    "role": "user",
-    "name": "David",
-    "email": "david@test.com",
+    "name": "Gabi",
+    "email": "gabi@test.com",
     "pin": 1112
   }
 ]

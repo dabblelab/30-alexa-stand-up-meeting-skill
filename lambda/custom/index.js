@@ -47,6 +47,7 @@ const GetCodeHandler = {
         codeExists = true;
 
         sessionAttributes.userEmail = usersData[i].email;
+        sessionAttributes.userName = usersData[i].name;
 
       } else if ( usersData[i].role === 'manager' ) {
         sessionAttributes.managerEmail = usersData[i].email;
@@ -89,17 +90,56 @@ const GetReportHandler = {
 
     let speechText;
 
-    const firstQuestion = currentIntent.slots.firstQuestion.value;
-    const secondQuestion = currentIntent.slots.secondQuestion.value;
-    const thirdQuestion = currentIntent.slots.thirdQuestion.value;
+    const firstAnswer = currentIntent.slots.firstQuestion.value;
+    const secondAnswer = currentIntent.slots.secondQuestion.value;
+    const thirdAnswer = currentIntent.slots.thirdQuestion.value;
 
-    sessionAttributes.answer1 = firstQuestion;
-    sessionAttributes.answer2 = secondQuestion;
-    sessionAttributes.answer3 = thirdQuestion;
+    sessionAttributes.answer1 = firstAnswer;
+    sessionAttributes.answer2 = secondAnswer;
+    sessionAttributes.answer3 = thirdAnswer;
 
     handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+    
+    if ( thirdAnswer === 'no' ) {
+      speechText = `Alright. That’s it for today’s stand up. Thanks so much for your report.`;
 
-    speechText = `You answered: ${firstQuestion} and ${secondQuestion}.`;
+      return handlerInput.responseBuilder
+        .speak(speechText)
+        .getResponse();
+
+    } else if ( thirdAnswer === 'yes' ) {
+
+      return handlerInput.responseBuilder
+        .addDelegateDirective({
+          name: 'ProgressBlockingIntent',
+          confirmationStatus: 'NONE',
+          slots: {}
+        })
+        .getResponse();
+    }
+  },
+};
+
+const ProgressBlockingHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'ProgressBlockingIntent';
+  },
+  handle(handlerInput) {
+    const currentIntent = handlerInput.requestEnvelope.request.intent;
+    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+
+    let speechText;
+
+    const firstAnswer = sessionAttributes.answer1;
+    const secondAnswer = sessionAttributes.answer2;
+    const thirdAnswer = sessionAttributes.answer3;
+    const fourthAnswer = currentIntent.slots.progressBlock.value;
+
+    sessionAttributes.answer4 = fourthAnswer;
+
+    handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
+    
     speechText = `Alright. That’s it for today’s stand up. Thanks so much for your report.`;
 
     return handlerInput.responseBuilder
@@ -189,6 +229,7 @@ exports.handler = skillBuilder
     LaunchRequestHandler,
     GetCodeHandler,
     GetReportHandler,
+    ProgressBlockingHandler,
     AboutIntentHandler,
     HelpIntentHandler,
     CancelAndStopIntentHandler,

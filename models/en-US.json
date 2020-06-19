@@ -40,14 +40,17 @@
                           "name": "firstQuestion",
                           "type": "AMAZON.SearchQuery",
                           "samples": [
-                              "{firstQuestion}"
+                              "Worked on {firstQuestion}",
+                              "I worked on {firstQuestion}"
                           ]
                       },
                       {
                           "name": "secondQuestion",
                           "type": "AMAZON.SearchQuery",
                           "samples": [
-                              "{secondQuestion}"
+                              "Next I will {secondQuestion}",
+                              "Today I will {secondQuestion}",
+                              "I will {secondQuestion}"
                           ]
                       },
                       {
@@ -58,7 +61,9 @@
                           ]
                       }
                   ],
-                  "samples": []
+                  "samples": [
+                      "trigger"
+                  ]
               }
           ],
           "types": [
@@ -85,6 +90,161 @@
                           }
                       }
                   ]
+              },
+              {
+                  "name": "ANY_ANSWER",
+                  "values": [
+                      {
+                          "name": {
+                              "value": "He went back to the video to see what had been recorded and was shocked at what he saw."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "She did a happy dance because all of the socks from the dryer matched."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "Shakespeare was a famous 17th-century diesel mechanic."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "She wanted a pet platypus but ended up getting a duck and a ferret instead."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "He had accidentally hacked into his company's server."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "This book is sure to liquefy your brain."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "He decided water-skiing on a frozen lake wasn’t a good idea."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "They got there early, and they got really good seats."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "That was how he came to win $1 million."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "There was no ice cream in the freezer, nor did they have money to go to the store."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "I met an interesting turtle while the song on the radio blasted away."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "Two seats were vacant."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "Standing on one's head at job interviews forms a lasting impression."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "He invested some skill points in Charisma and Strength."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "As the years pass by, we all know owners look more and more like their dogs."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "Dolores wouldn't have eaten the meal if she had known what it actually was."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "When I was little I had a car door slammed shut on my hand and I still remember it quite vividly."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "Lightning Paradise was the local hangout joint where the group usually ended up spending the night."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "Not all people who wander are lost."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "If eating three-egg omelets causes weight-gain, budgie eggs are a good substitute."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "They did nothing as the raccoon attacked the lady’s bag of food."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "Flesh-colored yoga pants were far worse than even he feared."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "The knives were out and she was sharpening hers."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "He had a hidden stash underneath the floorboards in the back room of the house."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "The snow-covered path was no help in finding his way out of the back-country."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "It must be five o'clock somewhere."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "She couldn't decide of the glass was half empty or half full so she drank it."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "She did not cheat on the test, for it was not the right thing to do."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "He took one look at what was under the table and noped the hell out of there."
+                          }
+                      },
+                      {
+                          "name": {
+                              "value": "The Japanese yen for commerce is still well-known."
+                          }
+                      }
+                  ]
               }
           ]
       },
@@ -92,6 +252,7 @@
           "intents": [
               {
                   "name": "GetReportIntent",
+                  "delegationStrategy": "ALWAYS",
                   "confirmationRequired": false,
                   "prompts": {},
                   "slots": [

@@ -99,7 +99,8 @@ const GetReportHandler = {
 
     handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
 
-    speechText = `You answered: ${firstQuestion} and ${secondQuestion}`;
+    speechText = `You answered: ${firstQuestion} and ${secondQuestion}.`;
+    speechText = `Alright. That’s it for today’s stand up. Thanks so much for your report.`;
 
     return handlerInput.responseBuilder
       .speak(speechText)

@@ -1,23 +1,96 @@
- /* 
- * Copyright (C) 2020 Dabble Lab - All Rights Reserved
- * You may use, distribute and modify this code under the 
- * terms and conditions defined in file 'LICENSE.txt', which 
- * is part of this source code package.
- *
- * For additional copyright information please
- * visit : http://dabblelab.com/copyright
- */
+/*
+  ISC License (ISC)
+  Copyright (c) 2020 Dabble Lab - http://dabblelab.com
 
+  Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby 
+  granted, provided that the above copyright notice and this permission notice appear in all copies.
+
+  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING 
+  ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, 
+  DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, 
+  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION 
+  WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+*/
+
+/*
+  ABOUT: 
+  This is an example skill that lets users provide a daily stand up meeting report.
+
+  SETUP:
+  See the included README.md file
+
+  RESOURCES:
+  For a video tutorial and support visit https://dabblelab.com/templates
+*/
 const Alexa = require('ask-sdk-core');
+const dotenv = require('dotenv');
+const i18n = require('i18next');
+const sprintf = require('i18next-sprintf-postprocessor');
+const handlebars = require('handlebars');
+const luxon = require('luxon');
 
 const usersData = require('./users.json');
+
+/* CONSTANTS */
+const constants = {
+  "FROM_NAME": "Dabble Lab",
+  "FROM_EMAIL": "learn@dabblelab.com",
+  "NOTIFY_EMAIL": "steve@dabblelab.com",
+};
+
+/* LANGUAGE STRINGS */
+const languageStrings = {
+  //  'de': require('./languages/de.js'),
+  //  'de-DE': require('./languages/de-DE.js'),
+  'en': require('./languages/en.js'),
+  //  'en-AU': require('./languages/en-AU.js'),
+  //  'en-CA': require('./languages/en-CA.js'),
+  //  'en-GB': require('./languages/en-GB.js'),
+  //  'en-IN': require('./languages/en-IN.js'),
+  'en-US': require('./languages/en-US.js'),
+  //  'es' : require('./languages/es.js'),
+  //  'es-ES': require('./languages/es-ES.js'),
+  //  'es-MX': require('./languages/es-MX.js'),
+  //  'es-US': require('./languages/es-US.js'),
+  //  'fr' : require('./languages/fr.js'),
+  //  'fr-CA': require('./languages/fr-CA.js'),
+  //  'fr-FR': require('./languages/fr-FR.js'),
+  //  'it' : require('./languages/it.js'),
+  //  'it-IT': require('./languages/it-IT.js'),
+  //  'ja' : require('./languages/ja.js'),
+  //  'ja-JP': require('./languages/ja-JP.js'),
+  //  'pt' : require('./languages/pt.js'),
+  //  'pt-BR': require('./languages/pt-BR.js'),
+};
+
+/* HANDLERS */
+const InvalidConfigHandler = {
+  canHandle(handlerInput) {
+
+    const attributes = handlerInput.attributesManager.getRequestAttributes();
+
+    const invalidConfig = attributes.invalidConfig || false;
+
+    return invalidConfig;
+  },
+  handle(handlerInput) {
+    const { responseBuilder, attributesManager } = handlerInput;
+    const requestAttributes = attributesManager.getRequestAttributes();
+
+    const speakOutput = requestAttributes.t('ENV_NOT_CONFIGURED');
+
+    return responseBuilder
+      .speak(speakOutput)
+      .getResponse();
+  },
+};
 
 const LaunchRequestHandler = {
   canHandle(handlerInput) {
     return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
   },
   handle(handlerInput) {
-    const speechText = `Hello. Welcome to the daily stand-up meeting. To continue, I’ll need your meeting code.`;
+    const speechText = `Hello. Welcome to the daily stand-up meeting. To continue, I'll need your meeting code.`;
     const repromptText = 'Please tell me your meeting code.';
 
     return handlerInput.responseBuilder
@@ -128,11 +201,16 @@ const HelpIntentHandler = {
       && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.HelpIntent';
   },
   handle(handlerInput) {
-    const speechText = 'Replace this with your help message';
+    const { attributesManager, responseBuilder } = handlerInput;
 
-    return handlerInput.responseBuilder
-      .speak(speechText)
-      .reprompt(speechText)
+    const requestAttributes = attributesManager.getRequestAttributes();
+
+    const speakOutput = requestAttributes.t('HELP'),
+      repromptOutput = requestAttributes.t('HELP_REPROMPT');
+
+    return responseBuilder
+      .speak(speakOutput)
+      .reprompt(repromptOutput)
       .getResponse();
   },
 };
@@ -144,10 +222,14 @@ const CancelAndStopIntentHandler = {
         || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.StopIntent');
   },
   handle(handlerInput) {
-    const speechText = 'Goodbye!';
+    const { attributesManager, responseBuilder } = handlerInput;
 
-    return handlerInput.responseBuilder
-      .speak(speechText)
+    const requestAttributes = attributesManager.getRequestAttributes();
+
+    const speakOutput = requestAttributes.t('CANCEL_STOP_RESPONSE');
+
+    return responseBuilder
+      .speak(speakOutput)
       .getResponse();
   },
 };
@@ -168,23 +250,122 @@ const ErrorHandler = {
     return true;
   },
   handle(handlerInput, error) {
+    console.log(`Error Request: ${JSON.stringify(handlerInput.requestEnvelope.request)}`);
     console.log(`Error handled: ${error.message}`);
 
+    const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
+    const speakOutput = requestAttributes.t('ERROR');
+    const repromptOutput = requestAttributes.t('ERROR_REPROMPT');
+
     return handlerInput.responseBuilder
-      .speak('Sorry, I can\'t understand the command. Please say again.')
-      .reprompt('Sorry, I can\'t understand the command. Please say again.')
+      .speak(speakOutput)
+      .reprompt(repromptOutput)
       .getResponse();
   },
 };
 
+/* INTERCEPTORS */
+const EnvironmentCheckInterceptor = {
+  process(handlerInput) {
+
+    //load environment variable from .env
+    const result = dotenv.config();
+
+    //check for process.env.S3_PERSISTENCE_BUCKET
+    if (!process.env.S3_PERSISTENCE_BUCKET) {
+      handlerInput.attributesManager.setRequestAttributes({ invalidConfig: true });
+    }
+
+    //check for process.env.SENDGRID_API_KEY
+    if (!process.env.SENDGRID_API_KEY) {
+      handlerInput.attributesManager.setRequestAttributes({ invalidConfig: true });
+    }
+
+  }
+};
+
+const LocalizationInterceptor = {
+  process(handlerInput) {
+    const { requestEnvelope, attributesManager } = handlerInput;
+
+    const localizationClient = i18n.use(sprintf).init({
+      lng: requestEnvelope.request.locale,
+      fallbackLng: 'en',
+      resources: languageStrings
+    });
+
+    localizationClient.localize = function () {
+      const args = arguments;
+      let values = [];
+
+      for (var i = 1; i < args.length; i++) {
+        values.push(args[i]);
+      }
+      const value = i18n.t(args[0], {
+        returnObjects: true,
+        postProcess: 'sprintf',
+        sprintf: values
+      });
+
+      if (Array.isArray(value)) {
+        return value[Math.floor(Math.random() * value.length)];
+      } else {
+        return value;
+      }
+    }
+
+    const attributes = attributesManager.getRequestAttributes();
+    attributes.t = function (...args) {
+      return localizationClient.localize(...args);
+    };
+  },
+};
+
+/* FUNCTIONS */
 function sendEmail(report) {
   
 }
 
+function getEmailBodyText(appointmentData) {
+
+  let textBody = `Meeting Details:\n`;
+
+  textBody += `Timezone: {{userTimezone}}\n`,
+    textBody += `Name: {{profileName}}\n`,
+    textBody += `Email: {{profileEmail}}\n`,
+    textBody += `Mobile Number: {{profileMobileNumber}}\n`,
+    textBody += `Date: {{appointmentDate}}\n`,
+    textBody += `Time: {{appointmentTime}}\n`;
+
+  const textBodyTemplate = handlebars.compile(textBody);
+
+  return textBodyTemplate(appointmentData);
+
+}
+
+function getEmailBodyHtml(appointmentData) {
+
+  let htmlBody = `<strong>Meeting Details:</strong><br/>`;
+
+  htmlBody += `Timezone: {{userTimezone}}<br/>`,
+    htmlBody += `Name: {{profileName}}<br/>`,
+    htmlBody += `Email: {{profileEmail}}<br/>`,
+    htmlBody += `Mobile Number: {{profileMobileNumber}}<br/>`,
+    htmlBody += `Date: {{appointmentDate}}<br/>`,
+    htmlBody += `Time: {{appointmentTime}}<br/>`;
+
+  const htmlBodyTemplate = handlebars.compile(htmlBody);
+
+  return htmlBodyTemplate(appointmentData);
+
+}
+
+/* LAMBDA SETUP */
 const skillBuilder = Alexa.SkillBuilders.custom();
 
 exports.handler = skillBuilder
   .addRequestHandlers(
+    InvalidConfigHandler,
     LaunchRequestHandler,
     GetCodeHandler,
     GetReportHandler,
@@ -193,5 +374,10 @@ exports.handler = skillBuilder
     CancelAndStopIntentHandler,
     SessionEndedRequestHandler
   )
+  .addRequestInterceptors(
+    EnvironmentCheckInterceptor,
+    LocalizationInterceptor
+  )
   .addErrorHandlers(ErrorHandler)
+  .withApiClient(new Alexa.DefaultApiClient())
   .lambda();

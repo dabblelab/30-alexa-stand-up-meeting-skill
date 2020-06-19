@@ -9,6 +9,12 @@
  */
 
 const Alexa = require('ask-sdk-core');
+const AWS = require('aws-sdk');
+const handlebars = require('handlebars');
+const sgMail = require('@sendgrid/mail');
+const dotenv = require('dotenv');
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const usersData = require('./users.json');
 
@@ -218,10 +224,67 @@ const ErrorHandler = {
   },
 };
 
-function sendEmail(report) {
-  
+function getEmailBodyText(reportData) {
+
+  let textBody = `A daily report has been accepted by Alexa. Here are the details:\n`;
+
+  textBody += `Name: {{userName}}\n`,
+    textBody += `Email: {{userEmail}}\n`,
+    textBody += `Work progress: {{answer1}}\n`,
+    textBody += `Work to do: {{answer2}}\n`,
+    textBody += `Progress blocked: {{answer3}}\n`,
+    textBody += `Reason of blocking: {{answer4}}\n`;
+
+  const textBodyTemplate = handlebars.compile(textBody);
+
+  return textBodyTemplate(reportData);
+
 }
 
+function getEmailBodyHtml(reportData) {
+
+  let htmlBody = `<strong>A daily report has been accepted by Alexa. Here are the details:</strong><br/>`;
+
+  htmlBody += `Name: {{userName}}<br/>`,
+    htmlBody += `Email: {{userEmail}}<br/>`,
+    htmlBody += `Work progress: {{answer1}}<br/>`,
+    htmlBody += `Work to do: {{answer2}}<br/>`,
+    htmlBody += `Progress blocked: {{answer3}}<br/>`,
+    htmlBody += `Reason of blocking: {{answer4}}<br/>`;
+
+  const htmlBodyTemplate = handlebars.compile(htmlBody);
+
+  return htmlBodyTemplate(reportData);
+
+}
+
+function saveAppointmentS3(reportData) {
+
+  return new Promise(function (resolve, reject) {
+    const s3 = new AWS.S3();
+
+    const params = {
+      Body: value,
+      Bucket: process.env.S3_PERSISTENCE_BUCKET,
+      Key: `reports/${reportData.reportDate}/${event.title.replace(/ /g, "-").toLowerCase()}-${luxon.DateTime.utc().toMillis()}.txt`
+    };
+
+    s3.putObject(params, function (err, data) {
+      if (err) {
+        // error
+        console.log(err, err.stack);
+        reject(err);
+      }
+      else {
+        //success
+        console.log(data);
+        resolve(value);
+      }
+    });
+  });
+}
+
+/* LAMBDA SETUP */
 const skillBuilder = Alexa.SkillBuilders.custom();
 
 exports.handler = skillBuilder

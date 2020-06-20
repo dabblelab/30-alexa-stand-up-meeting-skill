@@ -2,19 +2,23 @@
   ISC License (ISC)
   Copyright (c) 2020 Dabble Lab - http://dabblelab.com
 
-  Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby 
-  granted, provided that the above copyright notice and this permission notice appear in all copies.
+  Permission to use, copy, modify, and/or distribute this software for any purpose with or
+  without fee is hereby granted, provided that the above copyright notice and this permission
+  notice appear in all copies.
 
-  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING 
-  ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, 
-  DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, 
-  WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION 
-  WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS
+  SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
+  THE AUTHOR BE LIABLE FOR ANY SPECIAL,DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+  NEGLIGENCE OR OTHERTORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
+  OF THIS SOFTWARE.
 */
 
 /*
-  ABOUT: 
-  This is an example skill that lets users submit a daily stand up meeting report.
+  ABOUT:
+  This is an example skill that lets users schedule an appointment with the skill owner.
+  Users can choose a date and time to book an appointment that is then emailed to the skill owner.
+  The skill also supports checking a Google calendar for free/busy times.
 
   SETUP:
   See the included README.md file
@@ -30,17 +34,18 @@ const i18n = require('i18next');
 const sprintf = require('i18next-sprintf-postprocessor');
 const handlebars = require('handlebars');
 const luxon = require('luxon');
+const sgMail = require('@sendgrid/mail');
 
 const usersData = require('./team.json');
 
 /* CONSTANTS */
-//set constants in the .env file. see README.md for details
+// set constants in the .env file. see README.md for details
 
 /* LANGUAGE STRINGS */
 const languageStrings = {
   //  'de': require('./languages/de.js'),
   //  'de-DE': require('./languages/de-DE.js'),
-  'en': require('./languages/en.js'),
+  en: require('./languages/en.js'),
   //  'en-AU': require('./languages/en-AU.js'),
   //  'en-CA': require('./languages/en-CA.js'),
   //  'en-GB': require('./languages/en-GB.js'),
@@ -64,7 +69,6 @@ const languageStrings = {
 /* HANDLERS */
 const InvalidConfigHandler = {
   canHandle(handlerInput) {
-
     const attributes = handlerInput.attributesManager.getRequestAttributes();
 
     const invalidConfig = attributes.invalidConfig || false;
@@ -117,39 +121,35 @@ const GetCodeIntentHandler = {
 
     const meetingCode = +currentIntent.slots.MeetingCode.value;
     let codeExists;
-    
-    for ( let i = 0; i < usersData.length; i++ ) {
-      console.log(usersData[i]);
 
-      if ( usersData[i].pin === meetingCode ) {
+    for (let i = 0; i < usersData.length; i += 1) {
+      // console.log(usersData[i]);
+
+      if (usersData[i].pin === meetingCode) {
         codeExists = true;
 
         sessionAttributes.userEmail = usersData[i].email;
         sessionAttributes.userName = usersData[i].name;
-
       }
     }
 
     handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
 
-    if ( meetingCode && codeExists ) {
-  
+    if (meetingCode && codeExists) {
       return handlerInput.responseBuilder
         .addDelegateDirective({
           name: 'GetReportIntent',
           confirmationStatus: 'NONE',
-          slots: {}
+          slots: {},
         })
         .speak(speechText)
         .getResponse();
-
-    } else {
-      speechText = `Your meeting code is not valid.`;
-
-      return handlerInput.responseBuilder
-        .speak(speechText)
-        .getResponse();
     }
+    speechText = 'Your meeting code is not valid.';
+
+    return handlerInput.responseBuilder
+      .speak(speechText)
+      .getResponse();
   },
 };
 
@@ -162,21 +162,21 @@ const GetReportIntentCompleteHandler = {
   async handle(handlerInput) {
     const { requestEnvelope, attributesManager, responseBuilder } = handlerInput;
     const sessionAttributes = attributesManager.getSessionAttributes();
-    
-    const questionYesterday = Alexa.getSlotValue(requestEnvelope, "questionYesterday");
-    const questionToday = Alexa.getSlotValue(requestEnvelope, "questionToday");
-    const questionBlocking = Alexa.getSlotValue(requestEnvelope, "questionBlocking");
-    
+
+    const questionYesterday = Alexa.getSlotValue(requestEnvelope, 'questionYesterday');
+    const questionToday = Alexa.getSlotValue(requestEnvelope, 'questionToday');
+    const questionBlocking = Alexa.getSlotValue(requestEnvelope, 'questionBlocking');
+
     const reportData = {
-        reportDate: luxon.DateTime.local().toLocaleString(luxon.DateTime.DATE_HUGE),
-        name: sessionAttributes.userEmail, //TODO:get name from session
-        yesterday : questionYesterday,
-        today : questionToday,
-        blocking: questionBlocking
-    }
-    
-    let speechText = "Thank you. Your report was sent.";
-    
+      reportDate: luxon.DateTime.local().toLocaleString(luxon.DateTime.DATE_HUGE),
+      name: sessionAttributes.userEmail, // TODO:get name from session
+      yesterday: questionYesterday,
+      today: questionToday,
+      blocking: questionBlocking,
+    };
+
+    let speechText = 'Thank you. Your report was sent.';
+
     await sendEmail(reportData).then((result) => {
       speechText = result;
     });
@@ -216,8 +216,8 @@ const HelpIntentHandler = {
 
     const requestAttributes = attributesManager.getRequestAttributes();
 
-    const speakOutput = requestAttributes.t('HELP'),
-      repromptOutput = requestAttributes.t('HELP_REPROMPT');
+    const speakOutput = requestAttributes.t('HELP');
+    const repromptOutput = requestAttributes.t('HELP_REPROMPT');
 
     return responseBuilder
       .speak(speakOutput)
@@ -277,37 +277,35 @@ const ErrorHandler = {
 
 const IntentReflectorHandler = {
   canHandle(handlerInput) {
-      return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest';
+    return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest';
   },
   handle(handlerInput) {
-      const intentName = Alexa.getIntentName(handlerInput.requestEnvelope);
-      const speakOutput = `You just triggered ${intentName}`;
+    const intentName = Alexa.getIntentName(handlerInput.requestEnvelope);
+    const speakOutput = `You just triggered ${intentName}`;
 
-      return handlerInput.responseBuilder
-          .speak(speakOutput)
-          //.reprompt('add a reprompt if you want to keep the session open for the user to respond')
-          .getResponse();
-  }
+    return handlerInput.responseBuilder
+      .speak(speakOutput)
+    // .reprompt('add a reprompt if you want to keep the session open for the user to respond')
+      .getResponse();
+  },
 };
 
 /* INTERCEPTORS */
 const EnvironmentCheckInterceptor = {
   process(handlerInput) {
+    // load environment variable from .env
+    dotenv.config();
 
-    //load environment variable from .env
-    const result = dotenv.config();
-
-    //check for process.env.S3_PERSISTENCE_BUCKET
+    // check for process.env.S3_PERSISTENCE_BUCKET
     if (!process.env.S3_PERSISTENCE_BUCKET) {
       handlerInput.attributesManager.setRequestAttributes({ invalidConfig: true });
     }
 
-    //check for process.env.SENDGRID_API_KEY
+    // check for process.env.SENDGRID_API_KEY
     if (!process.env.SENDGRID_API_KEY) {
       handlerInput.attributesManager.setRequestAttributes({ invalidConfig: true });
     }
-
-  }
+  },
 };
 
 const LocalizationInterceptor = {
@@ -317,53 +315,47 @@ const LocalizationInterceptor = {
     const localizationClient = i18n.use(sprintf).init({
       lng: requestEnvelope.request.locale,
       fallbackLng: 'en',
-      resources: languageStrings
+      resources: languageStrings,
     });
 
-    localizationClient.localize = function () {
-      const args = arguments;
-      let values = [];
+    localizationClient.localize = (...args) => {
+      // const args = arguments;
+      const values = [];
 
-      for (var i = 1; i < args.length; i++) {
+      for (let i = 1; i < args.length; i += 1) {
         values.push(args[i]);
       }
       const value = i18n.t(args[0], {
         returnObjects: true,
         postProcess: 'sprintf',
-        sprintf: values
+        sprintf: values,
       });
 
       if (Array.isArray(value)) {
         return value[Math.floor(Math.random() * value.length)];
-      } else {
-        return value;
       }
-    }
+      return value;
+    };
 
     const attributes = attributesManager.getRequestAttributes();
-    attributes.t = function (...args) {
-      return localizationClient.localize(...args);
-    };
+    attributes.t = (...args) => localizationClient.localize(...args);
   },
 };
 
 /* FUNCTIONS */
 function sendEmail(reportData) {
-
-  return new Promise(function (resolve, reject) {
-
+  return new Promise(((resolve, reject) => {
     try {
-      //save report to s3
+      // save report to s3
       const s3 = new AWS.S3();
 
       const s3Params = {
         Body: getEmailBodyText(reportData),
         Bucket: process.env.S3_PERSISTENCE_BUCKET,
-        Key: `reports/${luxon.DateTime.local().toISODate()}/${reportData.name.replace(/ /g, "-").toLowerCase()}-${luxon.DateTime.utc().toMillis()}.txt`
+        Key: `reports/${luxon.DateTime.local().toISODate()}/${reportData.name.replace(/ /g, '-').toLowerCase()}-${luxon.DateTime.utc().toMillis()}.txt`,
       };
 
-      const s3Result = s3.putObject(s3Params, (error, data) => {
-   
+      s3.putObject(s3Params, () => {
         const msg = {
           to: process.env.TO_EMAIL,
           from: process.env.FROM_EMAIL,
@@ -372,49 +364,39 @@ function sendEmail(reportData) {
           html: getEmailBodyHtml(reportData),
         };
 
-        const sgMail = require('@sendgrid/mail');
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-        sgMail.send(msg).then(result => {
-          //mail done sending
-          resolve("Thank you. Your report was sent.")
+        sgMail.send(msg).then(() => {
+          // mail done sending
+          resolve('Thank you. Your report was sent.');
         });
       });
-
     } catch (ex) {
-      console.log(`bookAppointment() ERROR: ${ex.message}`)
-      reject(false)
+      // console.log(`bookAppointment() ERROR: ${ex.message}`);
+      reject(ex);
     }
-
-  });
-
+  }));
 }
 
 function getEmailBodyText(appointmentData) {
-
-  let textBody = `Stand Up Report for {{name}} ({{reportDate}}):\n\n`;
-
-  textBody += `What did you work on yesterday?\nANSWER: {{yesterday}}\n\n`,
-    textBody += `What are you working on today?\nANSWER: {{today}}\n\n`,
-    textBody += `What is blocking your progress?\nANSWER: {{blocking}}\n\n`;
+  const textBody = 'Stand Up Report for {{name}} ({{reportDate}}):\n\n'
+  + 'What did you work on yesterday?\nANSWER: {{yesterday}}\n\n'
+  + 'What are you working on today?\nANSWER: {{today}}\n\n'
+  + 'What is blocking your progress?\nANSWER: {{blocking}}\n\n';
 
   const textBodyTemplate = handlebars.compile(textBody);
 
   return textBodyTemplate(appointmentData);
-
 }
 
 function getEmailBodyHtml(appointmentData) {
-
-  let htmlBody = `<strong>Stand Up Report for {{name}}  ({{reportDate}}):</strong><br/><br/>`;
-
-  htmlBody += `What did you work on yesterday?<br/><strong>ANSWER:</strong> {{yesterday}}<br/></br/>`,
-    htmlBody += `What are you working on today?<br/><strong>ANSWER:</strong> {{today}}<br/></br/>`,
-    htmlBody += `What is blocking your progress?<br/><strong>ANSWER:</strong> {{blocking}}<br/></br/>`;
+  const htmlBody = '<strong>Stand Up Report for {{name}}  ({{reportDate}}):</strong><br/><br/>'
+  + 'What did you work on yesterday?<br/><strong>ANSWER:</strong> {{yesterday}}<br/></br/>'
+  + 'What are you working on today?<br/><strong>ANSWER:</strong> {{today}}<br/></br/>'
+  + 'What is blocking your progress?<br/><strong>ANSWER:</strong> {{blocking}}<br/></br/>';
 
   const htmlBodyTemplate = handlebars.compile(htmlBody);
 
   return htmlBodyTemplate(appointmentData);
-
 }
 
 /* LAMBDA SETUP */
@@ -430,11 +412,11 @@ exports.handler = skillBuilder
     HelpIntentHandler,
     CancelAndStopIntentHandler,
     SessionEndedRequestHandler,
-    IntentReflectorHandler
+    IntentReflectorHandler,
   )
   .addRequestInterceptors(
     EnvironmentCheckInterceptor,
-    LocalizationInterceptor
+    LocalizationInterceptor,
   )
   .addErrorHandlers(ErrorHandler)
   .withApiClient(new Alexa.DefaultApiClient())

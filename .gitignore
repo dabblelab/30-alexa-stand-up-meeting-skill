@@ -5,3 +5,4 @@ package-lock.json
 .env
 /_dev
 .DS_Store
+package-lock.json

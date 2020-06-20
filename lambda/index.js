@@ -70,8 +70,8 @@ const LaunchRequestHandler = {
   },
 };
 
-// This handler validates the user's pin using the values
-// in the team.json file.
+// This handler is used to validate users. Each user is defined in the
+// team.json and each should have a unique four digit number as a pin.
 const GetCodeIntentHandler = {
   canHandle(handlerInput) {
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();

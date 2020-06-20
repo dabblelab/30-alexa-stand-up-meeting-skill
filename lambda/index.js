@@ -1,8 +1,6 @@
 /*
   ABOUT:
-  This is an example skill that lets users schedule an appointment with the skill owner.
-  Users can choose a date and time to book an appointment that is then emailed to the skill owner.
-  The skill also supports checking a Google calendar for free/busy times.
+  This is an example skill that lets users submit a daily stand up meeting report.
 
   SETUP:
   See the included README.md file
@@ -20,7 +18,7 @@ const handlebars = require('handlebars');
 const luxon = require('luxon');
 const sgMail = require('@sendgrid/mail');
 
-// edit the team.json file to add uer pins
+// edit the team.json file to add your users
 const usersData = require('./team.json');
 
 /* CONSTANTS */
@@ -151,25 +149,6 @@ const GetReportIntentCompleteHandler = {
 
     return responseBuilder
       .speak(speechText)
-      .getResponse();
-  },
-};
-
-const AboutIntentHandler = {
-  canHandle(handlerInput) {
-    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
-      && handlerInput.requestEnvelope.request.intent.name === 'AboutIntent';
-  },
-  handle(handlerInput) {
-    const { attributesManager, responseBuilder } = handlerInput;
-    const requestAttributes = attributesManager.getRequestAttributes();
-
-    const speakOutput = requestAttributes.t('ABOUT');
-    const repromptOutput = requestAttributes.t('ABOUT_REPROMPT');
-
-    return responseBuilder
-      .speak(speakOutput)
-      .reprompt(repromptOutput)
       .getResponse();
   },
 };
@@ -401,7 +380,6 @@ exports.handler = Alexa.SkillBuilders.custom()
     LaunchRequestHandler,
     GetCodeIntentHandler,
     GetReportIntentCompleteHandler,
-    AboutIntentHandler,
     HelpIntentHandler,
     CancelAndStopIntentHandler,
     SessionEndedRequestHandler,

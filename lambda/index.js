@@ -1,20 +1,4 @@
 /*
-  ISC License (ISC)
-  Copyright (c) 2020 Dabble Lab - http://dabblelab.com
-
-  Permission to use, copy, modify, and/or distribute this software for any purpose with or
-  without fee is hereby granted, provided that the above copyright notice and this permission
-  notice appear in all copies.
-
-  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS
-  SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
-  THE AUTHOR BE LIABLE FOR ANY SPECIAL,DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
-  NEGLIGENCE OR OTHERTORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
-  OF THIS SOFTWARE.
-*/
-
-/*
   ABOUT:
   This is an example skill that lets users schedule an appointment with the skill owner.
   Users can choose a date and time to book an appointment that is then emailed to the skill owner.
@@ -36,37 +20,19 @@ const handlebars = require('handlebars');
 const luxon = require('luxon');
 const sgMail = require('@sendgrid/mail');
 
+// edit the team.json file to add uer pins
 const usersData = require('./team.json');
 
 /* CONSTANTS */
 // set constants in the .env file. see README.md for details
 
 /* LANGUAGE STRINGS */
-const languageStrings = {
-  //  'de': require('./languages/de.js'),
-  //  'de-DE': require('./languages/de-DE.js'),
-  en: require('./languages/en.js'),
-  //  'en-AU': require('./languages/en-AU.js'),
-  //  'en-CA': require('./languages/en-CA.js'),
-  //  'en-GB': require('./languages/en-GB.js'),
-  //  'en-IN': require('./languages/en-IN.js'),
-  'en-US': require('./languages/en-US.js'),
-  //  'es' : require('./languages/es.js'),
-  //  'es-ES': require('./languages/es-ES.js'),
-  //  'es-MX': require('./languages/es-MX.js'),
-  //  'es-US': require('./languages/es-US.js'),
-  //  'fr' : require('./languages/fr.js'),
-  //  'fr-CA': require('./languages/fr-CA.js'),
-  //  'fr-FR': require('./languages/fr-FR.js'),
-  //  'it' : require('./languages/it.js'),
-  //  'it-IT': require('./languages/it-IT.js'),
-  //  'ja' : require('./languages/ja.js'),
-  //  'ja-JP': require('./languages/ja-JP.js'),
-  //  'pt' : require('./languages/pt.js'),
-  //  'pt-BR': require('./languages/pt-BR.js'),
-};
+const languageStrings = require('./languages/languageStrings');
 
 /* HANDLERS */
+
+// This handler responds when required environment variables
+// missing or a .env file has not been created.
 const InvalidConfigHandler = {
   canHandle(handlerInput) {
     const attributes = handlerInput.attributesManager.getRequestAttributes();
@@ -106,6 +72,8 @@ const LaunchRequestHandler = {
   },
 };
 
+// This handler validates the user's pin using the values
+// in the team.json file.
 const GetCodeIntentHandler = {
   canHandle(handlerInput) {
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
@@ -123,8 +91,6 @@ const GetCodeIntentHandler = {
     let codeExists;
 
     for (let i = 0; i < usersData.length; i += 1) {
-      // console.log(usersData[i]);
-
       if (usersData[i].pin === meetingCode) {
         codeExists = true;
 
@@ -153,6 +119,8 @@ const GetCodeIntentHandler = {
   },
 };
 
+// This handler completes the GetReportIntent by calling the sendEmail
+// helper function and confirming that the stand up report was sent.
 const GetReportIntentCompleteHandler = {
   canHandle(handlerInput) {
     return handlerInput.requestEnvelope.request.type === 'IntentRequest'
@@ -256,6 +224,9 @@ const SessionEndedRequestHandler = {
   },
 };
 
+// This function handles syntax or routing errors. If you receive an error
+// stating the request handler chain is not found, you have not implemented
+// a handler for the intent or included it in the skill builder below
 const ErrorHandler = {
   canHandle() {
     return true;
@@ -275,6 +246,10 @@ const ErrorHandler = {
   },
 };
 
+// This function is used for testing and debugging. It will echo back an
+// intent name for an intent that does not have a suitable intent handler.
+// a respond from this function indicates an intent handler function should
+// be created or modified to handle the user's intent.
 const IntentReflectorHandler = {
   canHandle(handlerInput) {
     return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest';
@@ -291,6 +266,10 @@ const IntentReflectorHandler = {
 };
 
 /* INTERCEPTORS */
+
+// This function checks to make sure required environment vairables
+// exists. This function will only be called if required configuration
+// is not found so it's only a utilty function.
 const EnvironmentCheckInterceptor = {
   process(handlerInput) {
     // load environment variable from .env
@@ -308,6 +287,10 @@ const EnvironmentCheckInterceptor = {
   },
 };
 
+// This interceptor function is used for localization.
+// It uses the i18n module, along with defined language
+// string to return localized content. It defaults to 'en'
+// if it can't find a matching language.
 const LocalizationInterceptor = {
   process(handlerInput) {
     const { requestEnvelope, attributesManager } = handlerInput;
@@ -319,7 +302,6 @@ const LocalizationInterceptor = {
     });
 
     localizationClient.localize = (...args) => {
-      // const args = arguments;
       const values = [];
 
       for (let i = 1; i < args.length; i += 1) {
@@ -343,6 +325,11 @@ const LocalizationInterceptor = {
 };
 
 /* FUNCTIONS */
+
+// This function saves a copy of the stand up report to S3
+// and emails the report using SendGrid.com. This function
+// could be modified to use other email services providers
+// like https://mailchimp.com or https://aws.amazon.com/ses
 function sendEmail(reportData) {
   return new Promise(((resolve, reject) => {
     try {
@@ -377,6 +364,8 @@ function sendEmail(reportData) {
   }));
 }
 
+// A helper function that formats and returns the
+// text content for the email notification
 function getEmailBodyText(appointmentData) {
   const textBody = 'Stand Up Report for {{name}} ({{reportDate}}):\n\n'
   + 'What did you work on yesterday?\nANSWER: {{yesterday}}\n\n'
@@ -388,6 +377,8 @@ function getEmailBodyText(appointmentData) {
   return textBodyTemplate(appointmentData);
 }
 
+// A helper function that formats and returns the
+// html content for the email notification
 function getEmailBodyHtml(appointmentData) {
   const htmlBody = '<strong>Stand Up Report for {{name}}  ({{reportDate}}):</strong><br/><br/>'
   + 'What did you work on yesterday?<br/><strong>ANSWER:</strong> {{yesterday}}<br/></br/>'
@@ -400,9 +391,11 @@ function getEmailBodyHtml(appointmentData) {
 }
 
 /* LAMBDA SETUP */
-const skillBuilder = Alexa.SkillBuilders.custom();
 
-exports.handler = skillBuilder
+// The SkillBuilder acts as the entry point for your skill, routing all request and response
+// payloads to the handlers above. Make sure any new handlers or interceptors you've
+// defined are included below. The order matters - they're processed top to bottom.
+exports.handler = Alexa.SkillBuilders.custom()
   .addRequestHandlers(
     InvalidConfigHandler,
     LaunchRequestHandler,

@@ -321,7 +321,7 @@ function sendEmail(reportData) {
         });
       });
     } catch (ex) {
-      // console.log(`bookAppointment() ERROR: ${ex.message}`);
+      console.log(`bookAppointment() ERROR: ${ex.message}`);
       reject(ex);
     }
   }));

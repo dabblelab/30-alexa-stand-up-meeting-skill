@@ -1,13 +1,4 @@
-/*
-  ABOUT:
-  This is an example skill that lets users submit a daily stand up meeting report.
-
-  SETUP:
-  See the included README.md file
-
-  RESOURCES:
-  For a video tutorial and support visit https://dabblelab.com/templates
-*/
+// This is an example skill that lets users submit a daily stand up meeting report.
 
 const Alexa = require('ask-sdk-core');
 const AWS = require('aws-sdk');
@@ -40,12 +31,11 @@ const InvalidConfigHandler = {
     return invalidConfig;
   },
   handle(handlerInput) {
-    const { responseBuilder, attributesManager } = handlerInput;
-    const requestAttributes = attributesManager.getRequestAttributes();
+    const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
 
     const speakOutput = requestAttributes.t('ENV_NOT_CONFIGURED');
 
-    return responseBuilder
+    return handlerInput.responseBuilder
       .speak(speakOutput)
       .getResponse();
   },
@@ -56,14 +46,13 @@ const LaunchRequestHandler = {
     return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
   },
   handle(handlerInput) {
-    const { attributesManager, responseBuilder } = handlerInput;
-    const requestAttributes = attributesManager.getRequestAttributes();
+    const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
 
     const skillName = requestAttributes.t('SKILL_NAME');
     const speakOutput = requestAttributes.t('GREETING', skillName);
     const repromptOutput = requestAttributes.t('GREETING_REPROMPT');
 
-    return responseBuilder
+    return handlerInput.responseBuilder
       .speak(speakOutput)
       .reprompt(repromptOutput)
       .getResponse();
@@ -126,16 +115,15 @@ const GetReportIntentCompleteHandler = {
       && handlerInput.requestEnvelope.request.dialogState === 'COMPLETED';
   },
   async handle(handlerInput) {
-    const { requestEnvelope, attributesManager, responseBuilder } = handlerInput;
-    const sessionAttributes = attributesManager.getSessionAttributes();
+    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
 
-    const questionYesterday = Alexa.getSlotValue(requestEnvelope, 'questionYesterday');
-    const questionToday = Alexa.getSlotValue(requestEnvelope, 'questionToday');
-    const questionBlocking = Alexa.getSlotValue(requestEnvelope, 'questionBlocking');
+    const questionYesterday = Alexa.getSlotValue(handlerInput.requestEnvelope, 'questionYesterday');
+    const questionToday = Alexa.getSlotValue(handlerInput.requestEnvelope, 'questionToday');
+    const questionBlocking = Alexa.getSlotValue(handlerInput.handlerInputrequestEnvelope, 'questionBlocking');
 
     const reportData = {
       reportDate: luxon.DateTime.local().toLocaleString(luxon.DateTime.DATE_HUGE),
-      name: sessionAttributes.userEmail, // TODO:get name from session
+      name: sessionAttributes.userEmail,
       yesterday: questionYesterday,
       today: questionToday,
       blocking: questionBlocking,
@@ -147,7 +135,7 @@ const GetReportIntentCompleteHandler = {
       speechText = result;
     });
 
-    return responseBuilder
+    return handlerInput.responseBuilder
       .speak(speechText)
       .getResponse();
   },
@@ -159,14 +147,12 @@ const HelpIntentHandler = {
       && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.HelpIntent';
   },
   handle(handlerInput) {
-    const { attributesManager, responseBuilder } = handlerInput;
-
-    const requestAttributes = attributesManager.getRequestAttributes();
+    const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
 
     const speakOutput = requestAttributes.t('HELP');
     const repromptOutput = requestAttributes.t('HELP_REPROMPT');
 
-    return responseBuilder
+    return handlerInput.responseBuilder
       .speak(speakOutput)
       .reprompt(repromptOutput)
       .getResponse();
@@ -180,13 +166,11 @@ const CancelAndStopIntentHandler = {
         || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.StopIntent');
   },
   handle(handlerInput) {
-    const { attributesManager, responseBuilder } = handlerInput;
-
-    const requestAttributes = attributesManager.getRequestAttributes();
+    const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
 
     const speakOutput = requestAttributes.t('CANCEL_STOP_RESPONSE');
 
-    return responseBuilder
+    return handlerInput.responseBuilder
       .speak(speakOutput)
       .getResponse();
   },

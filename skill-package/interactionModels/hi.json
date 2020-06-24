@@ -28,8 +28,8 @@
                         }
                     ],
                     "samples": [
-                        "My code is {MeetingCode}",
-                        "The code is {MeetingCode}",
+                        "मेरा code है {MeetingCode}",
+                        "code है  {MeetingCode}",
                         "{MeetingCode}"
                     ]
                 },
@@ -115,7 +115,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "Alright, first question. What did you do yesterday?"
+                        "value": "ठीक है, पहला सवाल। कल तुमने क्या किया था?"
                     }
                 ]
             },
@@ -124,7 +124,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "Got it. What will you do today?"
+                        "value": "समझ गया। आज क्या करोगे?"
                     }
                 ]
             },
@@ -133,7 +133,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": " Okay, last question. Is there anything blocking your progress?"
+                        "value": "ठीक है, आखिरी सवाल। क्या आपकी प्रगति में कोई बाधा है??"
                     }
                 ]
             },

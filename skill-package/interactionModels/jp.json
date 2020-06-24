@@ -28,8 +28,8 @@
                         }
                     ],
                     "samples": [
-                        "My code is {MeetingCode}",
-                        "The code is {MeetingCode}",
+                        "私のコードは {MeetingCode}",
+                        "コードは {MeetingCode}",
                         "{MeetingCode}"
                     ]
                 },
@@ -115,7 +115,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "Alright, first question. What did you do yesterday?"
+                        "value": "さあ、最初の質問です。昨日は何をしましたか？"
                     }
                 ]
             },
@@ -124,7 +124,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "Got it. What will you do today?"
+                        "value": "了解です。今日は何をしますか？"
                     }
                 ]
             },
@@ -133,7 +133,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": " Okay, last question. Is there anything blocking your progress?"
+                        "value": "最後の質問です。ショウガイとなっているものは何ですか？"
                     }
                 ]
             },

@@ -28,8 +28,8 @@
                         }
                     ],
                     "samples": [
-                        "My code is {MeetingCode}",
-                        "The code is {MeetingCode}",
+                        "Mi código es {MeetingCode}",
+                        "El código es {MeetingCode}",
                         "{MeetingCode}"
                     ]
                 },
@@ -115,7 +115,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "Alright, first question. What did you do yesterday?"
+                        "value": "Vale, primera pregunta. ¿Qué hiciste ayer?"
                     }
                 ]
             },
@@ -124,7 +124,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "Got it. What will you do today?"
+                        "value": "Entendido. ¿Qué vas a hacer hoy?"
                     }
                 ]
             },
@@ -133,7 +133,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": " Okay, last question. Is there anything blocking your progress?"
+                        "value": "Vale, última pregunta. ¿Hay algo que esté bloqueando tu progreso?"
                     }
                 ]
             },

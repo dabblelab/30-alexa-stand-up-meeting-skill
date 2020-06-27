@@ -1,41 +1,33 @@
-# Daily Stand Up Meeting Skill
-This is an example skill that lets users submit a daily stand up meeting report. The skill prompts the user for a 4-digit pin then ask three standard agile meeting questions. The responses are then email to a manager. 
+# Build An Alexa Fact Skill
+<img src="https://m.media-amazon.com/images/G/01/mobile-apps/dex/alexa/alexa-skills-kit/tutorials/quiz-game/header._TTH_.png" />
 
-## Prerequisites / Dependencies
-* Amazon Developer Account (https://developer.amazon.com)
-* SendGrid.com Account (https://sendgrid.com/)
+This Alexa sample skill is a template for a basic fact skill.
 
-> **NOTE:** As an alternative to using SendGrid, you could also modify this code to work with other  
-> email services like [MailChimp](https://mailchimp.com) or [AWS SES](https://aws.amazon.com/ses/).
+## Skill Architecture
+Each skill consists of two basic parts, a front end and a back end.
+The front end is the voice interface, or VUI.
+The voice interface is configured through the voice interaction model.
+The back end is where the logic of your skill resides.
 
-## Setup
-- Create a new Alexa-Hosted skill using this template.
-- Get a Sendgrid API key. See: https://sendgrid.com/docs/ui/account-and-settings/api-keys/
-- Create a file named `.env`, in the same location as the index.js file, copy in the following code, and replace the dummy values with your values.
-```
-SENDGRID_API_KEY=your_sendgrid_api_key
-FROM_EMAIL=your_sender_email
-TO_EMAIL=your_recipient_email
-```
-- Set up team members in the `team.json` file like the example below. Be sure to use a unique 4-digit pin for each user.
+## Three Options for Skill Setup
+There are a number of different ways for you to setup your skill, depending on your experience and what tools you have available.
 
-```json
-[
-  { 
-    "name": "Steve",
-    "email": "steve@test.com",
-    "pin": 1111
-  },
-  { 
-    "name": "Gabi",
-    "email": "gabi@test.com",
-    "pin": 1112
-  }
-]
-```
+ * If this is your first skill, choose the [Alexa-Hosted backend instructions](./instructions/setup-vui-alexa-hosted.md) to get started quickly.
+ * If you want to manage the backend resources in your own AWS account, you can follow the [AWS-Hosted instructions](./instructions/setup-vui-aws-hosted.md).
+ * Developers with the ASK Command Line Interface configured may follow the [ASK CLI instructions](./instructions/cli.md).
 
-## Running the Demo
-Start the skill by saying: Alexa, start Daily Stand Up
+---
 
-## Resources
-For a video tutorial and support for this skill template visit https://dabblelab.com/templates
+## Additional Resources
+
+### Community
+* [Amazon Developer Forums](https://forums.developer.amazon.com/spaces/165/index.html) - Join the conversation!
+* [Hackster.io](https://www.hackster.io/amazon-alexa) - See what others are building with Alexa.
+
+### Tutorials & Guides
+* [Voice Design Guide](https://developer.amazon.com/designing-for-voice/) - A great resource for learning conversational and voice user interface design.
+* [Codecademy: Learn Alexa](https://www.codecademy.com/learn/learn-alexa) - Learn how to build an Alexa Skill from within your browser with this beginner friendly tutorial on Codecademy!
+
+### Documentation
+* [Official Alexa Skills Kit SDK for Node.js](http://alexa.design/node-sdk-docs) - The Official Node.js SDK Documentation
+* [Official Alexa Skills Kit Documentation](https://developer.amazon.com/docs/ask-overviews/build-skills-with-the-alexa-skills-kit.html) - Official Alexa Skills Kit Documentation

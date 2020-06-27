@@ -1,7 +1,7 @@
-# Build An Alexa Fact Skill
+# Build An Alexa Stand Up Meeting Skill
 <img src="https://m.media-amazon.com/images/G/01/mobile-apps/dex/alexa/alexa-skills-kit/tutorials/quiz-game/header._TTH_.png" />
 
-This Alexa sample skill is a template for a basic fact skill.
+This Alexa sample skill is a template for a skill that collects daily stand up reports for daily stand up meetings.
 
 ## Skill Architecture
 Each skill consists of two basic parts, a front end and a back end.

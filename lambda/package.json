@@ -1,5 +1,5 @@
 {
-  "name": "alexa-stand-up-meeting-skills",
+  "name": "alexa-stand-up-meeting-skill",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -18,12 +18,11 @@
     "i18next": "^19.4.5",
     "i18next-sprintf-postprocessor": "^0.2.2",
     "ics": "^2.22.1",
-    "handlebars": "^4.0.11",
     "luxon": "^1.24.1"
   },
   "devDependencies": {
-    "eslint": "^7.3.0",
+    "eslint": "^7.3.1",
     "eslint-config-airbnb-base": "^14.2.0",
-    "eslint-plugin-import": "^2.21.2"
+    "eslint-plugin-import": "^2.22.0"
   }
 }

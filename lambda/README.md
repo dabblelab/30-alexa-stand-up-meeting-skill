@@ -1,5 +1,5 @@
 # Daily Stand Up Meeting Skill
-This is an example skill that lets users submit a daily stand up meeting report. The skill prompts the user for a 4-digit pin then ask three standard agile meeting questions. The responses are then email to a manager. 
+This is an example skill that lets users submit a daily stand up meeting report. The skill prompts the user for a 4-digit pin then ask three standard agile meeting questions. The responses are then emailed to a manager. 
 
 ## Prerequisites / Dependencies
 * Amazon Developer Account (https://developer.amazon.com)

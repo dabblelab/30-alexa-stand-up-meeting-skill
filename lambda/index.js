@@ -1,15 +1,23 @@
-// This is an example skill that lets users submit a daily stand up meeting report.
+/*
+  ABOUT:
+  This is an example skill that lets users submit a daily stand up meeting report.
+
+  SETUP:
+  See the included README.md file
+
+  RESOURCES:
+  For a video tutorial and support visit https://dabblelab.com/templates
+*/
 
 const Alexa = require('ask-sdk-core');
 const AWS = require('aws-sdk');
 const dotenv = require('dotenv');
 const i18n = require('i18next');
 const sprintf = require('i18next-sprintf-postprocessor');
-const handlebars = require('handlebars');
 const luxon = require('luxon');
 const sgMail = require('@sendgrid/mail');
 
-// edit the team.json file to add your users
+// edit the team.json file to add uer pins
 const usersData = require('./team.json');
 
 /* CONSTANTS */
@@ -31,11 +39,12 @@ const InvalidConfigHandler = {
     return invalidConfig;
   },
   handle(handlerInput) {
-    const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
+    const { responseBuilder, attributesManager } = handlerInput;
+    const requestAttributes = attributesManager.getRequestAttributes();
 
     const speakOutput = requestAttributes.t('ENV_NOT_CONFIGURED');
 
-    return handlerInput.responseBuilder
+    return responseBuilder
       .speak(speakOutput)
       .getResponse();
   },
@@ -59,8 +68,8 @@ const LaunchRequestHandler = {
   },
 };
 
-// This handler is used to validate users. Each user is defined in the
-// team.json and each should have a unique four digit number as a pin.
+// This handler validates the user's pin using the values
+// in the team.json file.
 const GetCodeIntentHandler = {
   canHandle(handlerInput) {
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
@@ -68,40 +77,63 @@ const GetCodeIntentHandler = {
       && handlerInput.requestEnvelope.request.intent.name === 'GetCodeIntent'
       && !sessionAttributes.validated;
   },
-  handle(handlerInput) {
+  async handle(handlerInput) {
     const currentIntent = handlerInput.requestEnvelope.request.intent;
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+    const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
 
-    let speechText;
+    let speakOutput = requestAttributes.t('PIN_VALID');
+    const repromptOutput = requestAttributes.t('PIN_VALID_REPROMPT');
 
     const meetingCode = +currentIntent.slots.MeetingCode.value;
-    let codeExists;
+    const user = await getUserByPin(meetingCode);
 
-    for (let i = 0; i < usersData.length; i += 1) {
-      if (usersData[i].pin === meetingCode) {
-        codeExists = true;
-
-        sessionAttributes.userEmail = usersData[i].email;
-        sessionAttributes.userName = usersData[i].name;
-      }
-    }
-
-    handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
-
-    if (meetingCode && codeExists) {
+    if (user) {
+      sessionAttributes.userEmail = user.email;
+      sessionAttributes.userName = user.name;
+      handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
       return handlerInput.responseBuilder
         .addDelegateDirective({
           name: 'GetReportIntent',
           confirmationStatus: 'NONE',
           slots: {},
         })
-        .speak(speechText)
+        .speak(speakOutput)
         .getResponse();
     }
-    speechText = 'Your meeting code is not valid.';
+
+    speakOutput = requestAttributes.t('PIN_INVALID');
 
     return handlerInput.responseBuilder
-      .speak(speechText)
+      .speak(speakOutput)
+      .reprompt(repromptOutput)
+      .getResponse();
+  },
+};
+
+const GetReportIntentNotCompleteHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'GetReportIntent'
+      && handlerInput.requestEnvelope.request.dialogState !== 'COMPLETED';
+  },
+  async handle(handlerInput) {
+    const currentIntent = handlerInput.requestEnvelope.request.intent;
+    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+    const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
+
+    // make sure the user is validated
+    if (!sessionAttributes.userEmail) {
+      const speakOutput = requestAttributes.t('USER_INVALID');
+      const repromptOutput = requestAttributes.t('USER_INVALID_REPROMPT');
+      return handlerInput.responseBuilder
+        .speak(speakOutput)
+        .reprompt(repromptOutput)
+        .getResponse();
+    }
+
+    return handlerInput.responseBuilder
+      .addDelegateDirective(currentIntent)
       .getResponse();
   },
 };
@@ -116,27 +148,52 @@ const GetReportIntentCompleteHandler = {
   },
   async handle(handlerInput) {
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+    const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
+
+    // make sure the user is validated
+    if (!sessionAttributes.userEmail) {
+      const speakOutput = requestAttributes.t('USER_INVALID');
+      const repromptOutput = requestAttributes.t('USER_INVALID_REPROMPT');
+      return handlerInput.responseBuilder
+        .speak(speakOutput)
+        .reprompt(repromptOutput)
+        .getResponse();
+    }
 
     const questionYesterday = Alexa.getSlotValue(handlerInput.requestEnvelope, 'questionYesterday');
     const questionToday = Alexa.getSlotValue(handlerInput.requestEnvelope, 'questionToday');
-    const questionBlocking = Alexa.getSlotValue(handlerInput.handlerInputrequestEnvelope, 'questionBlocking');
+    const questionBlocking = Alexa.getSlotValue(handlerInput.requestEnvelope, 'questionBlocking');
 
     const reportData = {
       reportDate: luxon.DateTime.local().toLocaleString(luxon.DateTime.DATE_HUGE),
-      name: sessionAttributes.userEmail,
+      name: sessionAttributes.userName,
+      email: sessionAttributes.userEmail,
       yesterday: questionYesterday,
       today: questionToday,
       blocking: questionBlocking,
     };
 
-    let speechText = 'Thank you. Your report was sent.';
+    sessionAttributes.reportData = reportData;
+    handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
 
-    await sendEmail(reportData).then((result) => {
-      speechText = result;
-    });
+    let speakOutput = requestAttributes.t('REPORT_SAVED');
+
+    // save the report to s3
+    await saveToS3(handlerInput);
+
+    // send the report via email if configured
+    if (process.env.SEND_EMAIL) {
+      await sendEmail(handlerInput)
+        .then(() => {
+          speakOutput = requestAttributes.t('EMAIL_SENT');
+        })
+        .catch(() => {
+          speakOutput = requestAttributes.t('EMAIL_ERROR');
+        });
+    }
 
     return handlerInput.responseBuilder
-      .speak(speechText)
+      .speak(speakOutput)
       .getResponse();
   },
 };
@@ -151,6 +208,71 @@ const HelpIntentHandler = {
 
     const speakOutput = requestAttributes.t('HELP');
     const repromptOutput = requestAttributes.t('HELP_REPROMPT');
+
+    return handlerInput.responseBuilder
+      .speak(speakOutput)
+      .reprompt(repromptOutput)
+      .getResponse();
+  },
+};
+
+// This function handles 'yes' and 'no' responses.
+const YesNoIntentHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && (handlerInput.requestEnvelope.request.intent.name === 'AMAZON.YesIntent'
+        || handlerInput.requestEnvelope.request.intent.name === 'AMAZON.NoIntent');
+  },
+  handle(handlerInput) {
+    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+    const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
+
+    // make sure the user is validated
+    if (!sessionAttributes.userEmail) {
+      const speakOutput = requestAttributes.t('USER_INVALID');
+      const repromptOutput = requestAttributes.t('USER_INVALID_REPROMPT');
+      return handlerInput.responseBuilder
+        .speak(speakOutput)
+        .reprompt(repromptOutput)
+        .getResponse();
+    }
+
+    let speakOutput = '';
+
+    if (handlerInput.requestEnvelope.request.intent.name === 'AMAZON.YesIntent') {
+      speakOutput = requestAttributes.t('YES');
+      return handlerInput.responseBuilder
+        .addDelegateDirective({
+          name: 'GetReportIntent',
+          confirmationStatus: 'NONE',
+          slots: {},
+        })
+        .speak(speakOutput)
+        .getResponse();
+    }
+
+    if (handlerInput.requestEnvelope.request.intent.name === 'AMAZON.NoIntent') {
+      speakOutput = requestAttributes.t('NO');
+    }
+
+    return handlerInput.responseBuilder
+      .speak(speakOutput)
+      .getResponse();
+  },
+};
+
+// This function handles utterances that can't be matched to any
+// other intent handler.
+const FallbackIntentHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'AMAZON.FallbackIntent';
+  },
+  handle(handlerInput) {
+    const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
+
+    const speakOutput = requestAttributes.t('FALLBACK');
+    const repromptOutput = requestAttributes.t('FALLBACK_REPROMPT');
 
     return handlerInput.responseBuilder
       .speak(speakOutput)
@@ -218,12 +340,13 @@ const IntentReflectorHandler = {
     return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest';
   },
   handle(handlerInput) {
+    const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
+
     const intentName = Alexa.getIntentName(handlerInput.requestEnvelope);
-    const speakOutput = `You just triggered ${intentName}`;
+    const speakOutput = requestAttributes.t('REFLECTOR', intentName);
 
     return handlerInput.responseBuilder
       .speak(speakOutput)
-    // .reprompt('add a reprompt if you want to keep the session open for the user to respond')
       .getResponse();
   },
 };
@@ -289,68 +412,76 @@ const LocalizationInterceptor = {
 
 /* FUNCTIONS */
 
-// This function saves a copy of the stand up report to S3
-// and emails the report using SendGrid.com. This function
-// could be modified to use other email services providers
-// like https://mailchimp.com or https://aws.amazon.com/ses
-function sendEmail(reportData) {
+function getUserByPin(userPin) {
   return new Promise(((resolve, reject) => {
     try {
-      // save report to s3
-      const s3 = new AWS.S3();
-
-      const s3Params = {
-        Body: getEmailBodyText(reportData),
-        Bucket: process.env.S3_PERSISTENCE_BUCKET,
-        Key: `reports/${luxon.DateTime.local().toISODate()}/${reportData.name.replace(/ /g, '-').toLowerCase()}-${luxon.DateTime.utc().toMillis()}.txt`,
-      };
-
-      s3.putObject(s3Params, () => {
-        const msg = {
-          to: process.env.TO_EMAIL,
-          from: process.env.FROM_EMAIL,
-          subject: `Stand Up Report for ${reportData.name}`,
-          text: getEmailBodyText(reportData),
-          html: getEmailBodyHtml(reportData),
-        };
-
-        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-        sgMail.send(msg).then(() => {
-          // mail done sending
-          resolve('Thank you. Your report was sent.');
-        });
-      });
+      const users = usersData.filter((user) => user.pin === userPin);
+      if (users && users.length > 0) {
+        resolve(users[0]);
+      } else {
+        resolve();
+      }
     } catch (ex) {
-      console.log(`bookAppointment() ERROR: ${ex.message}`);
       reject(ex);
     }
   }));
 }
 
-// A helper function that formats and returns the
-// text content for the email notification
-function getEmailBodyText(appointmentData) {
-  const textBody = 'Stand Up Report for {{name}} ({{reportDate}}):\n\n'
-  + 'What did you work on yesterday?\nANSWER: {{yesterday}}\n\n'
-  + 'What are you working on today?\nANSWER: {{today}}\n\n'
-  + 'What is blocking your progress?\nANSWER: {{blocking}}\n\n';
+// This function saves a copy of the stand up report to S3
+// the report is located in the 'reports/yyyy-mm-dd/' folder
+// where 'yyyy-mm-dd' is the data the reports was created
+function saveToS3(handlerInput) {
+  return new Promise((resolve, reject) => {
+    try {
+      const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
+      const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+      const reportData = sessionAttributes.reportData;
 
-  const textBodyTemplate = handlebars.compile(textBody);
+      const s3 = new AWS.S3();
 
-  return textBodyTemplate(appointmentData);
+      const s3Params = {
+        Body: requestAttributes.t('EMAIL_BODY', reportData.email, reportData.reportDate, reportData.yesterday, reportData.today, reportData.blocking),
+        Bucket: process.env.S3_PERSISTENCE_BUCKET,
+        Key: `reports/${luxon.DateTime.local().toISODate()}/${reportData.name.replace(/ /g, '-').toLowerCase()}-${luxon.DateTime.utc().toMillis()}.txt`,
+      };
+
+      s3.putObject(s3Params, () => {
+        resolve();
+      });
+    } catch (ex) {
+      reject(ex);
+    }
+  });
 }
 
-// A helper function that formats and returns the
-// html content for the email notification
-function getEmailBodyHtml(appointmentData) {
-  const htmlBody = '<strong>Stand Up Report for {{name}}  ({{reportDate}}):</strong><br/><br/>'
-  + 'What did you work on yesterday?<br/><strong>ANSWER:</strong> {{yesterday}}<br/></br/>'
-  + 'What are you working on today?<br/><strong>ANSWER:</strong> {{today}}<br/></br/>'
-  + 'What is blocking your progress?<br/><strong>ANSWER:</strong> {{blocking}}<br/></br/>';
+// This function emails the report using SendGrid.com.
+// You could be modified this to use other email services providers
+// like https://mailchimp.com or https://aws.amazon.com/ses
+function sendEmail(handlerInput) {
+  return new Promise((resolve, reject) => {
+    const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
+    const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
 
-  const htmlBodyTemplate = handlebars.compile(htmlBody);
+    try {
+      const reportData = sessionAttributes.reportData;
 
-  return htmlBodyTemplate(appointmentData);
+      const msg = {
+        to: process.env.TO_EMAIL,
+        from: process.env.FROM_EMAIL,
+        subject: requestAttributes.t('EMAIL_SUBJECT', reportData.name),
+        text: requestAttributes.t('EMAIL_BODY', reportData.email, reportData.reportDate, reportData.yesterday, reportData.today, reportData.blocking),
+      };
+
+      sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+      sgMail.send(msg).then(() => {
+        // mail done sending
+        resolve();
+      });
+    } catch (ex) {
+      console.log(`bookAppointment() ERROR: ${ex.message}`);
+      reject(ex);
+    }
+  });
 }
 
 /* LAMBDA SETUP */
@@ -363,10 +494,13 @@ exports.handler = Alexa.SkillBuilders.custom()
     InvalidConfigHandler,
     LaunchRequestHandler,
     GetCodeIntentHandler,
+    GetReportIntentNotCompleteHandler,
     GetReportIntentCompleteHandler,
+    YesNoIntentHandler,
     HelpIntentHandler,
     CancelAndStopIntentHandler,
     SessionEndedRequestHandler,
+    FallbackIntentHandler,
     IntentReflectorHandler,
   )
   .addRequestInterceptors(

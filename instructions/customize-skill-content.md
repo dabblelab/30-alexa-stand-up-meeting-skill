@@ -1,4 +1,4 @@
-# Build Stand Up Meeting Skill
+# Build a Stand Up Meeting Skill
 <img src="https://m.media-amazon.com/images/G/01/mobile-apps/dex/alexa/alexa-skills-kit/tutorials/quiz-game/header._TTH_.png" />
 
 Build an Alexa that collects scrum meeting stand up reports.

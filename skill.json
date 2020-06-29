@@ -18,7 +18,7 @@
             "custom": {
                 "endpoint": {
                     "sourceDir": "lambda",
-                    "uri": "ask-custom-skill-sample-nodejs-hello-world-default"
+                    "uri": "ask-custom-skill-alexa-stand-up-meeting"
                 }
             }
         },

@@ -17,7 +17,8 @@
         "apis": {
             "custom": {
                 "endpoint": {
-                    "sourceDir": "lambda/"
+                    "sourceDir": "lambda",
+                    "uri": "ask-custom-skill-sample-nodejs-hello-world-default"
                 }
             }
         },

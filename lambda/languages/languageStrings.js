@@ -17,6 +17,8 @@ module.exports = {
   //  'fr-FR': require('./fr-FR.js'),
   //  'it' : require('./it.js'),
   //  'it-IT': require('./it-IT.js'),
+  //  'hi': require('./hi.js'),
+  //  'hi-IN': require('./hi-IN.js'),
   //  'ja' : require('./ja.js'),
   //  'ja-JP': require('./ja-JP.js'),
   //  'pt' : require('./pt.js'),

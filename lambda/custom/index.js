@@ -82,8 +82,17 @@ const GetCodeIntentHandler = {
     const sessionAttributes = handlerInput.attributesManager.getSessionAttributes();
     const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
 
+    const pinAttempts = sessionAttributes.pinAttempts || 1;
+
     let speakOutput = requestAttributes.t('PIN_VALID');
     const repromptOutput = requestAttributes.t('PIN_VALID_REPROMPT');
+
+    if (pinAttempts > 2) {
+      speakOutput = requestAttributes.t('PIN_MAX_ATTEMPTS');
+      return handlerInput.responseBuilder
+        .speak(speakOutput)
+        .getResponse();
+    }
 
     const meetingCode = +currentIntent.slots.MeetingCode.value;
     const user = await getUserByPin(meetingCode);
@@ -103,6 +112,9 @@ const GetCodeIntentHandler = {
     }
 
     speakOutput = requestAttributes.t('PIN_INVALID');
+
+    sessionAttributes.pinAttempts = pinAttempts + 1;
+    handlerInput.attributesManager.setSessionAttributes(sessionAttributes);
 
     return handlerInput.responseBuilder
       .speak(speakOutput)
@@ -191,6 +203,24 @@ const GetReportIntentCompleteHandler = {
           speakOutput = requestAttributes.t('EMAIL_ERROR');
         });
     }
+
+    return handlerInput.responseBuilder
+      .speak(speakOutput)
+      .getResponse();
+  },
+};
+
+// This handler function provides users with information about
+// how to get or reset their PIN
+const ResetPinIntentHandler = {
+  canHandle(handlerInput) {
+    return handlerInput.requestEnvelope.request.type === 'IntentRequest'
+      && handlerInput.requestEnvelope.request.intent.name === 'ResetPinIntent';
+  },
+  handle(handlerInput) {
+    const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
+
+    const speakOutput = requestAttributes.t('HELP_PIN');
 
     return handlerInput.responseBuilder
       .speak(speakOutput)
@@ -497,6 +527,7 @@ exports.handler = Alexa.SkillBuilders.custom()
     GetReportIntentNotCompleteHandler,
     GetReportIntentCompleteHandler,
     YesNoIntentHandler,
+    ResetPinIntentHandler,
     HelpIntentHandler,
     CancelAndStopIntentHandler,
     SessionEndedRequestHandler,

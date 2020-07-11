@@ -43,7 +43,7 @@
                     "largeIconUri": "https://s3.amazonaws.com/cdn.dabblelab.com/img/skill-template-default-lg.png"
                 },
                 "es-US": {
-                    "examplePhrases": [                       
+                    "examplePhrases": [
                         "Alexa lanza Daily Stand Up",
                         "Alexa comienza Daily Stand Up",
                         "Daily Stand Up"
@@ -53,7 +53,7 @@
                     "largeIconUri": "https://s3.amazonaws.com/cdn.dabblelab.com/img/skill-template-default-lg.png"
                 },
                 "fr-CA": {
-                    "examplePhrases": [                        
+                    "examplePhrases": [
                         "Alexa lance Stand up",
                         "Alexa démarre Stand up ",
                         "Stand up quotidien"
@@ -63,7 +63,7 @@
                     "largeIconUri": "https://s3.amazonaws.com/cdn.dabblelab.com/img/skill-template-default-lg.png"
                 },
                 "fr-FR": {
-                    "examplePhrases": [                       
+                    "examplePhrases": [
                         "Alexa lance Stand up",
                         "Alexa démarre Stand up",
                         "Stand up quotidien"
@@ -73,7 +73,7 @@
                     "largeIconUri": "https://s3.amazonaws.com/cdn.dabblelab.com/img/skill-template-default-lg.png"
                 },
                 "hi-IN": {
-                    "examplePhrases": [                       
+                    "examplePhrases": [
                         "Alexa दैनिक stand up शुरू करो ",
                         "Alexa दैनिक stand up शुरू करो ",
                         "दैनिक stand up"
@@ -83,7 +83,7 @@
                     "largeIconUri": "https://s3.amazonaws.com/cdn.dabblelab.com/img/skill-template-default-lg.png"
                 },
                 "it-IT": {
-                    "examplePhrases": [                        
+                    "examplePhrases": [
                         "Alexa apri Stand Up",
                         "Alexa lancia Stand Up",
                         "Alexa inizia Stand Up"
@@ -93,7 +93,7 @@
                     "largeIconUri": "https://s3.amazonaws.com/cdn.dabblelab.com/img/skill-template-default-lg.png"
                 },
                 "ja-JP": {
-                    "examplePhrases": [                        
+                    "examplePhrases": [
                         "アレクサ、デイリースタンドアップを起動して",
                         "アレクサ、デイリースタンドアップをスタートして",
                         "デイリースタンドアップ"
@@ -116,10 +116,7 @@
         },
         "apis": {
             "custom": {
-                "endpoint": {
-                    "sourceDir": "lambda",
-                    "uri": "ask-custom-skill-alexa-stand-up-meeting"
-                }
+                "endpoint": {}
             }
         },
         "manifestVersion": "1.0"

@@ -1,4 +1,3 @@
-// en.js
 module.exports = {
   translation: {
     'SKILL_NAME': "tägliches Stand Up",

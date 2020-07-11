@@ -1,4 +1,3 @@
-// en.js
 module.exports = {
   translation: {
     'SKILL_NAME': "Stand Up Quotidien",
@@ -29,18 +28,12 @@ module.exports = {
     'EMAIL_SUBJECT': [
       "Rapport Stand Up pour les %s",
     ],
-    'EMAIL_BODY': "Rapport Stand up pour %s (%s)\nQu'est-ce que vous avez travaillé hier ? %s\nQu'est-ce que vous travaillez aujourd'hui ? %s\nQu'est-ce qui bloque votre progression ? %s\n
-
-
-",
+    'EMAIL_BODY': "Rapport Stand up pour %s (%s)\nQu'est-ce que vous avez travaillé hier ? %s\nQu'est-ce que vous travaillez aujourd'hui ? %s\nQu'est-ce qui bloque votre progression ? %s\n",
     'EMAIL_SENT': [
       "Merci.Votre rapport a été envoyé.",
     ],
     'EMAIL_ERROR': [
-      "Désolé, il y a eu un problème pour envoyer votre rapport. Veuillez réessayer plus tard.
-
-
-",
+      "Désolé, il y a eu un problème pour envoyer votre rapport. Veuillez réessayer plus tard."
     ],
     'REPORT_SAVED': [
       "Merci. Votre rapport a été sauvegardé.",

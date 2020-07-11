@@ -73,8 +73,7 @@ module.exports = {
       "Tchau.",
       "Ok. Eu estarei aqui se você precisar de mim.",
     ],
-    'ENV_NOT_CONFIGURED': "Uma ou mais configurações não estão ajustadas. Por favor leia o arquivo readme para ajuda.
-",
+    'ENV_NOT_CONFIGURED': "Uma ou mais configurações não estão ajustadas. Por favor leia o arquivo readme para ajuda.",
     'ERROR': "Desculpe, eu não entendi. Você poderia repetir?",
     'ERROR_REPROMPT': "Você poderia repetir?",
   },

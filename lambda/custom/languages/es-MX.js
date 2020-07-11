@@ -2,7 +2,7 @@ module.exports = {
   translation: {
     'SKILL_NAME': "Daily Stand Up",
     'GREETING': [
-      "Bienvenido a% s. Para continuar, por favor dime tu pin.",
+      "Bienvenido a %s. Para continuar, por favor dime tu pin.",
     ],
     'GREETING_REPROMPT': [
       "¿Cuál es tu pin?",
@@ -26,9 +26,9 @@ module.exports = {
       "¿Cuál es tu pin?",
     ],
     'EMAIL_SUBJECT': [
-      "Reporte Stand Up para% s",
+      "Reporte Stand Up para %s",
     ],
-    'EMAIL_BODY': "Reporte Stand Up para% s (% s) \n\n¿En qué trabajó ayer? \n ANSWER:% s \n\n ¿En qué está trabajando hoy? \n ANSWER:% s \n\n ¿Qué está bloqueando Tu progreso? \n ANSWER:% s \n\n",
+    'EMAIL_BODY': "Reporte Stand Up para %s (%s) \n\n¿En qué trabajó ayer? \n ANSWER: %s \n\n ¿En qué está trabajando hoy? \n ANSWER: %s \n\n ¿Qué está bloqueando Tu progreso? \n ANSWER: %s \n\n",
     'EMAIL_SENT': [
       "Gracias. Tu informe fue enviado.",
     ],
@@ -48,7 +48,7 @@ module.exports = {
       "Si has perdido u olvidado tu pin, comuníque con el administrador de skills.",
     ],
     'REFLECTOR': [
-      "Acabas de activar la intención% s. Estás escuchando esta respuesta porque% s aún no tiene un controlador de intención.",
+      "Acabas de activar la intención %s. Estás escuchando esta respuesta porque %s aún no tiene un controlador de intención.",
     ],
     'FALLBACK': [
       "Puedes decir: ayer trabajé, o hoy trabajaré: seguido del trabajo que hiciste o harás. ¿En qué trabajaste ayer?",

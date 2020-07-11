@@ -33,9 +33,9 @@
                         }
                     ],
                     "samples": [
-                        "My code is {MeetingCode}",
-                        "The code is {MeetingCode}",
-                        "{MeetingCode}"
+                        "GetCodeIntent",
+                        "GetCodeIntent",
+                        "GetCodeIntent"
                     ]
                 },
                 {
@@ -64,11 +64,11 @@
                         }
                     ],
                     "samples": [
-                        "{questionToday} today",
-                        "{questionYesterday} yesterday",
-                        "yesterday {questionYesterday}",
-                        "today {questionToday}",
-                        "start my stand up"
+                        "GetReportIntent",
+                        "GetReportIntent",
+                        "GetReportIntent",
+                        "GetReportIntent",
+                        "GetReportIntent"
                     ]
                 },
                 {
@@ -87,11 +87,11 @@
                     "name": "ResetPinIntent",
                     "slots": [],
                     "samples": [
-                        "where do i get a pin",
-                        "what is my pin",
-                        "how do i get a pin",
-                        "i need a new pin",
-                        "i forgot my pin"
+                        "ResetPinIntent",
+                        "ResetPinIntent",
+                        "ResetPinIntent",
+                        "ResetPinIntent",
+                        "ResetPinIntent"
                     ]
                 }
             ],
@@ -143,7 +143,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "Alright, first question. What did you do yesterday?"
+                        "value": "Elicit.Slot.288779318596.409557698368"
                     }
                 ]
             },
@@ -152,7 +152,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "Got it. What will you do today?"
+                        "value": "Elicit.Slot.288779318596.1420775370020"
                     }
                 ]
             },
@@ -161,7 +161,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "Okay, last question. Is there anything blocking your progress?"
+                        "value": "Elicit.Slot.288779318596.88143460540"
                     }
                 ]
             },
@@ -170,7 +170,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "What did you work on yesterday?"
+                        "value": "Elicit.Slot.420907304064.1434077833163"
                     }
                 ]
             },
@@ -179,7 +179,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "What will you work on today?"
+                        "value": "Elicit.Slot.173201382582.539843571833"
                     }
                 ]
             },
@@ -188,7 +188,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "What if anything is blocking your progress?"
+                        "value": "Elicit.Slot.173201382582.1204298947985"
                     }
                 ]
             }

@@ -33,8 +33,8 @@
                         }
                     ],
                     "samples": [
-                        "My code is {MeetingCode}",
-                        "The code is {MeetingCode}",
+                        "Meu código é {MeetingCode}",
+                        "O código é {MeetingCode}",
                         "{MeetingCode}"
                     ]
                 },
@@ -64,11 +64,11 @@
                         }
                     ],
                     "samples": [
-                        "{questionToday} today",
-                        "{questionYesterday} yesterday",
-                        "yesterday {questionYesterday}",
-                        "today {questionToday}",
-                        "start my stand up"
+                        "{questionToday} hoje",
+                        "{questionYesterday} ontem",
+                        "ontem {questionYesterday}",
+                        "hoje {questionToday}",
+                        "inicie meu stand up"
                     ]
                 },
                 {
@@ -87,11 +87,11 @@
                     "name": "ResetPinIntent",
                     "slots": [],
                     "samples": [
-                        "where do i get a pin",
-                        "what is my pin",
-                        "how do i get a pin",
-                        "i need a new pin",
-                        "i forgot my pin"
+                        ""aonde consigo uma senha",",
+                        ""qual a minha senha",",
+                        ""como consigo uma senha",",
+                        ""eu preciso de uma senha",",
+                        "esqueci minha senha"
                     ]
                 }
             ],
@@ -143,7 +143,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "Alright, first question. What did you do yesterday?"
+                        "value": "Ok, primeira pergunta. O que você fez ontem?"
                     }
                 ]
             },
@@ -152,7 +152,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "Got it. What will you do today?"
+                        "value": "Entendi. O que você vai fazer hoje?"
                     }
                 ]
             },
@@ -161,7 +161,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "Okay, last question. Is there anything blocking your progress?"
+                        "value": "Ok, última pergunta. Existe alguma coisa bloqueando o seu progresso?"
                     }
                 ]
             },
@@ -170,7 +170,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "What did you work on yesterday?"
+                        "value": "Em que você trabalhou ontem?"
                     }
                 ]
             },
@@ -179,7 +179,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "What will you work on today?"
+                        "value": "Em que você irá trabalhar hoje?"
                     }
                 ]
             },
@@ -188,7 +188,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "What if anything is blocking your progress?"
+                        "value": "Se existe algo bloqueando o seu progresso, o que é?"
                     }
                 ]
             }

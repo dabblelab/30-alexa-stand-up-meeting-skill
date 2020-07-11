@@ -33,8 +33,8 @@
                         }
                     ],
                     "samples": [
-                        "My code is {MeetingCode}",
-                        "The code is {MeetingCode}",
+                        "मेरा code  {MeetingCode} है",
+                        "code  {MeetingCode} है",
                         "{MeetingCode}"
                     ]
                 },
@@ -64,11 +64,12 @@
                         }
                     ],
                     "samples": [
-                        "{questionToday} today",
-                        "{questionYesterday} yesterday",
-                        "yesterday {questionYesterday}",
-                        "today {questionToday}",
-                        "start my stand up"
+                        "{questionToday} आज",
+                        "{questionYesterday} कल",
+                        "कल {questionYesterday}",
+                        "
+आज {questionToday}",
+                        "मेरा stand up  शुरू करो"
                     ]
                 },
                 {
@@ -87,11 +88,11 @@
                     "name": "ResetPinIntent",
                     "slots": [],
                     "samples": [
-                        "where do i get a pin",
-                        "what is my pin",
-                        "how do i get a pin",
-                        "i need a new pin",
-                        "i forgot my pin"
+                        "मुझे पिन कहाँ मिलता है",
+                        "मेरा pin  क्या है",
+                        "मुझे pin  कैसे मिलेगा",
+                        "मुझे एक नया pin  चाहिए",
+                        "मैं अपना pin  भूल गया"
                     ]
                 }
             ],
@@ -143,7 +144,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "Alright, first question. What did you do yesterday?"
+                        "value": "ठीक है, पहले सवाल। आपने कल क्या किया?"
                     }
                 ]
             },
@@ -152,7 +153,8 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "Got it. What will you do today?"
+                        "value": "
+समझ गया। तुम आज क्या करोगे?"
                     }
                 ]
             },
@@ -161,7 +163,8 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "Okay, last question. Is there anything blocking your progress?"
+                        "value": "
+ठीक है, आखिरी सवाल। क्या आपकी प्रगति में कोई बाधा है?"
                     }
                 ]
             },
@@ -170,7 +173,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "What did you work on yesterday?"
+                        "value": "आपने कल क्या काम किया था ?"
                     }
                 ]
             },
@@ -179,7 +182,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "What will you work on today?"
+                        "value": "आज आप क्या काम करेंगे?"
                     }
                 ]
             },
@@ -188,7 +191,8 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "What if anything is blocking your progress?"
+                        "value": "
+क्या होगा अगर कुछ भी आपकी प्रगति को रोक रहा है?"
                     }
                 ]
             }

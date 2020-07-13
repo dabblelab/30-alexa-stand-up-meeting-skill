@@ -143,7 +143,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "Très bien, première question. Qu'avez-vous fait hier ?"
+                        "value": "Très bien, première question. Qu'avez-vous fait hier?"
                     }
                 ]
             },
@@ -152,7 +152,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "J'ai compris. Qu'allez-vous faire aujourd'hui ?"
+                        "value": "J'ai compris. Qu'allez-vous faire aujourd'hui?"
                     }
                 ]
             },
@@ -161,7 +161,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "D'accord, dernière question. Y a-t-il quelque chose qui bloque votre progression ?"
+                        "value": "D'accord, dernière question. Y a-t-il quelque chose qui bloque votre progression?"
                     }
                 ]
             },
@@ -170,7 +170,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "Sur quoi avez-vous travaillé hier ?"
+                        "value": "Sur quoi avez-vous travaillé hier?"
                     }
                 ]
             },
@@ -179,7 +179,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "Sur quoi allez-vous travailler aujourd'hui ?"
+                        "value": "Sur quoi allez-vous travailler aujourd'hui?"
                     }
                 ]
             },
@@ -188,7 +188,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "Que faire si quelque chose bloque votre progression ?"
+                        "value": "Que faire si quelque chose bloque votre progression?"
                     }
                 ]
             }

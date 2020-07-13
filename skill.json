@@ -101,7 +101,7 @@
                 "fr-CA": {
                     "examplePhrases": [
                         "Alexa lance Stand up",
-                        "Alexa démarre Stand up ",
+                        "Alexa démarre Stand up",
                         "Stand up quotidien"
                     ],
                     "name": "Daily Stand Up",
@@ -120,8 +120,8 @@
                 },
                 "hi-IN": {
                     "examplePhrases": [
-                        "Alexa दैनिक stand up शुरू करो ",
-                        "Alexa दैनिक stand up शुरू करो ",
+                        "Alexa दैनिक stand up शुरू करो",
+                        "Alexa दैनिक stand up शुरू करो",
                         "दैनिक stand up"
                     ],
                     "name": "Daily Stand Up",

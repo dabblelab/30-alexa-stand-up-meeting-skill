@@ -33,7 +33,7 @@
                         }
                     ],
                     "samples": [
-                        "Mein Code lautet {MeetingCode",
+                        "Mein Code lautet {MeetingCode}",
                         "Der Code lautet Â {MeetingCode}",
                         "{MeetingCode}"
                     ]

@@ -33,8 +33,8 @@
                         }
                     ],
                     "samples": [
-                        "Mon code est {MeetingCode",
-                        "Le code est {MeetingCode",
+                        "Mon code est {MeetingCode}",
+                        "Le code est {MeetingCode}",
                         "{MeetingCode}"
                     ]
                 },

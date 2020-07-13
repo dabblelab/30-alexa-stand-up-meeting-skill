@@ -34,7 +34,7 @@
                     ],
                     "samples": [
                         "Mein Code lautet {MeetingCode",
-                        "Der Code lautet  {MeetingCode}",
+                        "Der Code lautet Â {MeetingCode}",
                         "{MeetingCode}"
                     ]
                 },
@@ -65,7 +65,7 @@
                     ],
                     "samples": [
                         "{questionToday} heute",
-                        "{questionYesterday}  gestern",
+                        "{questionYesterday} Â gestern",
                         "gestern {questionYesterday}",
                         "heute {questionToday}",
                         "starte mein Stand Up"

@@ -87,10 +87,10 @@
                     "name": "ResetPinIntent",
                     "slots": [],
                     "samples": [
-                        ""aonde consigo uma senha",",
-                        ""qual a minha senha",",
-                        ""como consigo uma senha",",
-                        ""eu preciso de uma senha",",
+                        "aonde consigo uma senha",
+                        "qual a minha senha",
+                        "como consigo uma senha",
+                        "eu preciso de uma senha",
                         "esqueci minha senha"
                     ]
                 }

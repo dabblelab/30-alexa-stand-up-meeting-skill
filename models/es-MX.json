@@ -87,10 +87,10 @@
                     "name": "ResetPinIntent",
                     "slots": [],
                     "samples": [
-                        ""dónde consigo un pin",",
-                        ""cuál es mi pin",",
-                        ""cómo consigo un pin",",
-                        ""necesito un nuevo pin",",
+                        "dónde consigo un pin",
+                        "cuál es mi pin",
+                        "cómo consigo un pin",
+                        "necesito un nuevo pin",
                         "olvidé mi pin"
                     ]
                 }

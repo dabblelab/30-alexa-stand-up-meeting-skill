@@ -1,5 +1,11 @@
 {
     "manifest": {
+        "apis": {
+            "custom": {
+              "endpoint": {},
+              "interfaces": []
+            }
+          },
         "publishingInformation": {
             "locales": {
                 "en-US": {
@@ -14,8 +20,8 @@
                 },
                 "de-DE": {
                     "examplePhrases": [
-                        "Alexa, lade tägliches Stand Up",
-                        "Alexa, starte tägliches Stand Up",
+                        "Alexa lade tägliches Stand Up",
+                        "Alexa starte tägliches Stand Up",
                         "tägliches Stand Up"
                     ],
                     "name": "Daily Stand Up",
@@ -112,11 +118,6 @@
                     "smallIconUri": "https://s3.amazonaws.com/cdn.dabblelab.com/img/skill-template-default-sm.png",
                     "largeIconUri": "https://s3.amazonaws.com/cdn.dabblelab.com/img/skill-template-default-lg.png"
                 }
-            }
-        },
-        "apis": {
-            "custom": {
-                "endpoint": {}
             }
         },
         "manifestVersion": "1.0"

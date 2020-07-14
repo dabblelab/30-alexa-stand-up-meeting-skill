@@ -2,9 +2,6 @@
     "interactionModel": {
         "languageModel": {
             "invocationName": "daily stand up",
-            "modelConfiguration": {
-
-            },
             "intents": [
                 {
                     "name": "AMAZON.CancelIntent",

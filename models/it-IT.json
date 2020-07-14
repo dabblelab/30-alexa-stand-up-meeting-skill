@@ -67,10 +67,6 @@
                     ]
                 },
                 {
-                    "name": "AMAZON.FallbackIntent",
-                    "samples": []
-                },
-                {
                     "name": "AMAZON.YesIntent",
                     "samples": []
                 },
@@ -85,7 +81,7 @@
                         "Dove posso trovare un codice pin",
                         "Qual è il mio codice pin",
                         "Come posso ottenere un codice pin",
-                        "“Ho bisogno di un codice pin nuovo”",
+                        "Ho bisogno di un codice pin nuovo",
                         "Ho dimenticato il mio codice pin"
                     ]
                 }

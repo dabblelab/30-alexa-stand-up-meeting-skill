@@ -2,6 +2,11 @@
     "interactionModel": {
         "languageModel": {
             "invocationName": "daily stand up",
+            "modelConfiguration": {
+                "fallbackIntentSensitivity": {
+                    "level": "LOW"
+                }
+            },
             "intents": [
                 {
                     "name": "AMAZON.CancelIntent",
@@ -82,9 +87,9 @@
                     "name": "ResetPinIntent",
                     "slots": [],
                     "samples": [
-                        "woher kriege ich eine PIN?",
-                        "wie lautet meine PIN?",
-                        "wie bekomme ich eine PIN?",
+                        "woher kriege ich eine PIN",
+                        "wie lautet meine PIN",
+                        "wie bekomme ich eine PIN",
                         "ich brauche eine neue PIN",
                         "ich habe meine PIN vergessen"
                     ]

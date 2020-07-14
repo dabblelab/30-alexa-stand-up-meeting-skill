@@ -28,8 +28,8 @@
                         }
                     ],
                     "samples": [
-                        "Mi código es {MeetingCode}",
-                        "El código es {MeetingCode}",
+                        "Mi código es {MeetingCode}",
+                        "El código es {MeetingCode}",
                         "{MeetingCode}"
                     ]
                 },
@@ -65,6 +65,10 @@
                         "hoy {questionToday}",
                         "comienza mi stand up"
                     ]
+                },
+                {
+                    "name": "AMAZON.FallbackIntent",
+                    "samples": []
                 },
                 {
                     "name": "AMAZON.YesIntent",

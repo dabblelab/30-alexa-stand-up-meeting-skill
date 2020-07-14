@@ -29,7 +29,7 @@
                     ],
                     "samples": [
                         "मेरा code  {MeetingCode} है",
-                        "code  {MeetingCode} है",
+                        "code  {MeetingCode} है",
                         "{MeetingCode}"
                     ]
                 },
@@ -83,8 +83,8 @@
                     "slots": [],
                     "samples": [
                         "मुझे पिन कहाँ मिलता है",
-                        "मेरा pin क्या है",
-                        "मुझे pin कैसे मिलेगा",
+                        "मेरा pin  क्या है",
+                        "मुझे pin  कैसे मिलेगा",
                         "मुझे एक नया pin  चाहिए",
                         "मैं अपना pin  भूल गया"
                     ]

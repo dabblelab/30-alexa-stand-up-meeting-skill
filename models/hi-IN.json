@@ -3,9 +3,7 @@
         "languageModel": {
             "invocationName": "daily stand up",
             "modelConfiguration": {
-                "fallbackIntentSensitivity": {
-                    "level": "LOW"
-                }
+
             },
             "intents": [
                 {

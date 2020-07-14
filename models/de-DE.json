@@ -138,7 +138,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "Alles klar, erste Frage. Was hast du gerstern gemacht?"
+                        "value": "Alles klar erste Frage. Was hast du gerstern gemacht?"
                     }
                 ]
             },
@@ -156,7 +156,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "Okay, letzte Frage. Blockiert irgendwas deinen Fortschritt?"
+                        "value": "Okay letzte Frage. Blockiert irgendwas deinen Fortschritt?"
                     }
                 ]
             },
@@ -183,7 +183,7 @@
                 "variations": [
                     {
                         "type": "PlainText",
-                        "value": "Was ist, wenn irgendetwas Ihren Fortschritt blockiert?"
+                        "value": "Was ist wenn irgendetwas Ihren Fortschritt blockiert?"
                     }
                 ]
             }

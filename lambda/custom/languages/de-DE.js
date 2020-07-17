@@ -2,7 +2,7 @@ module.exports = {
   translation: {
     'SKILL_NAME': "tägliches Stand Up",
     'GREETING': [
-      "Willkommen zu %. Um fortzufahren, nenne mir bitte deine PIN.",
+      "Willkommen zu %s. Um fortzufahren, nenne mir bitte deine PIN.",
     ],
     'GREETING_REPROMPT': [
       "Wie lautet deine PIN?",

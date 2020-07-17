@@ -3,7 +3,7 @@ module.exports = {
   translation: {
     'SKILL_NAME': "Stand Up quotidiano",
     'GREETING': [
-      "Benvenuto in% s. Per continuare, per favore dammi il tuo codice pin",
+      "Benvenuto in %s. Per continuare, per favore dammi il tuo codice pin",
     ],
     'GREETING_REPROMPT': [
       "Qual è il tuo codice pin?",

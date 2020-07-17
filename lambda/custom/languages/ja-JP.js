@@ -3,7 +3,7 @@ module.exports = {
   translation: {
     'SKILL_NAME': "デイリースタンドアップ",
     'GREETING': [
-      "%sへようこそ。アンショウバンゴウを教えてください",
+      "%s へようこそ。アンショウバンゴウを教えてください",
     ],
     'GREETING_REPROMPT': [
       "アンショウバンゴウを教えてください",
@@ -27,7 +27,7 @@ module.exports = {
       "アンショウバンゴウを教えてください。",
     ],
     'EMAIL_SUBJECT': [
-      "%sのレポート",
+      "%s のレポート",
     ],
     'EMAIL_BODY': "%s のレポート昨日何をしましたか。今日は何をしていますか。何が進行を妨げていますか。",
     'EMAIL_SENT': [

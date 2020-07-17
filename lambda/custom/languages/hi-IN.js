@@ -3,7 +3,7 @@ module.exports = {
   translation: {
     'SKILL_NAME': "Daily Stand Up",
     'GREETING': [
-      "% S में स्वागत है। जारी रखने के लिए, कृपया मुझे अपना pin  बताएं।",
+      "%s में स्वागत है। जारी रखने के लिए, कृपया मुझे अपना pin  बताएं।",
     ],
     'GREETING_REPROMPT': [
       "तुम्हारा pin  क्या है?",
@@ -27,9 +27,9 @@ module.exports = {
       "तुम्हारा pin क्या है?",
     ],
     'EMAIL_SUBJECT': [
-      "% S के लिए standup report",
+      "%s के लिए standup report",
     ],
-    'EMAIL_BODY': "% S के लिए standup report\n\n आपने कल क्या काम किया? \nANSWER:%s\n\n आज आप क्या काम कर रहे हैं? \n ANSWER: %s\n\n आपकी प्रगति को क्या रोक रहा है?\nANSWER: %s\n\n",
+    'EMAIL_BODY': "%s के लिए standup report\n\n आपने कल क्या काम किया? \nANSWER: %s\n\n आज आप क्या काम कर रहे हैं? \n ANSWER: %s\n\n आपकी प्रगति को क्या रोक रहा है?\nANSWER: %s\n\n",
     'EMAIL_SENT': [
       "धन्यवाद। आपकी report भेज दी गई।",
     ],
@@ -49,7 +49,7 @@ module.exports = {
       "यदि आप अपना pin खो चुके हैं या भूल गए हैं, तो कृपया skill administrator से  संपर्क करें।",
     ],
     'REFLECTOR': [
-      "आपने अभी% s intent को trigger किया है । आप इस प्रतिक्रिया को सुन रहे हैं क्योंकि% s के पास अभी तक कोई intent  नहीं है।",
+      "आपने अभी %s intent को trigger किया है । आप इस प्रतिक्रिया को सुन रहे हैं क्योंकि %s के पास अभी तक कोई intent  नहीं है।",
     ],
     'FALLBACK': [
       "आप कह सकते हैं: कल मैंने काम किया था, या आज मैं काम करूंगा: उसके बाद जो काम आपने किया या करेंगे। आपने कल क्या काम किया?",
